@@ -1,0 +1,777 @@
+﻿@page
+@model EVDealerSales.Presentation.Pages.Staff.CustomersModel
+@{
+    ViewData["Title"] = "Manage Customers";
+}
+
+@section Styles {
+    <style>
+        .staff-page-clean {
+            background: #000;
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .staff-header-clean {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .staff-title-clean {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0 0 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .staff-title-clean i {
+            color: #0070f3;
+        }
+
+        .staff-subtitle-clean {
+            font-size: 1rem;
+            color: #888;
+            margin: 0;
+        }
+
+        .staff-card-clean {
+            background: linear-gradient(135deg, #0a0a0a 0%, #111 100%);
+            border: 1px solid #1a1a1a;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .staff-card-header-clean {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #1a1a1a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .staff-card-title-clean {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .staff-card-title-clean i {
+            color: #0070f3;
+        }
+
+        .staff-card-body-clean {
+            padding: 1.5rem;
+        }
+
+        .search-bar-clean {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input-clean {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 2.75rem;
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input-clean:focus {
+            background: #1a1a1a;
+            border-color: #0070f3;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.1);
+        }
+
+        .search-icon-clean {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        }
+
+        .filter-grid-clean {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-group-clean {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label-clean {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #888;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .filter-input-clean {
+            padding: 0.75rem 1rem;
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .filter-input-clean:focus {
+            background: #1a1a1a;
+            border-color: #0070f3;
+            outline: none;
+        }
+
+        .filter-actions-clean {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-clean {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary-clean {
+            background: linear-gradient(135deg, #0070f3 0%, #0060d3 100%);
+            color: #fff;
+        }
+
+        .btn-primary-clean:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 112, 243, 0.4);
+        }
+
+        .btn-secondary-clean {
+            background: #1a1a1a;
+            color: #ccc;
+            border: 1px solid #333;
+        }
+
+        .btn-secondary-clean:hover {
+            background: #222;
+            color: #fff;
+        }
+
+        .table-clean {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table-clean thead th {
+            padding: 1rem;
+            background: #0a0a0a;
+            border-bottom: 1px solid #1a1a1a;
+            color: #888;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: left;
+        }
+
+        .table-clean tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .table-clean tbody tr:hover {
+            background: rgba(0, 112, 243, 0.05);
+        }
+
+        .table-clean tbody td {
+            padding: 1rem;
+            border-bottom: 1px solid #1a1a1a;
+            color: #ccc;
+            font-size: 0.95rem;
+        }
+
+        .user-cell-clean {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar-clean {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .user-info-clean {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name-clean {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.125rem;
+        }
+
+        .user-role-clean {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .info-with-icon-clean {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #ccc;
+        }
+
+        .info-with-icon-clean i {
+            color: #888;
+        }
+
+        .date-cell-clean {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .date-primary-clean {
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .date-secondary-clean {
+            color: #888;
+            font-size: 0.875rem;
+        }
+
+        .btn-action-clean {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border: 1px solid #0070f3;
+            background: transparent;
+            color: #0070f3;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            text-decoration: none;
+        }
+
+        .btn-action-clean:hover {
+            background: #0070f3;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .empty-state-clean {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-icon-clean {
+            font-size: 4rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-title-clean {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .empty-description-clean {
+            font-size: 1rem;
+            color: #888;
+        }
+
+        .pagination-clean {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1.5rem;
+        }
+
+        .page-btn-clean {
+            padding: 0.5rem 0.875rem;
+            background: #111;
+            border: 1px solid #1a1a1a;
+            color: #ccc;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .page-btn-clean:hover {
+            background: #0070f3;
+            border-color: #0070f3;
+            color: #fff;
+        }
+
+        .page-btn-clean.active {
+            background: #0070f3;
+            border-color: #0070f3;
+            color: #fff;
+        }
+
+        .pagination-info-clean {
+            text-align: center;
+            color: #888;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+        }
+
+        .modal-clean {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 16px;
+        }
+
+        .modal-header-clean {
+            padding: 1.5rem;
+            border-bottom: 1px solid #1a1a1a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title-clean {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #0070f3;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-body-clean {
+            padding: 1.5rem;
+        }
+
+        .modal-footer-clean {
+            padding: 1.5rem;
+            border-top: 1px solid #1a1a1a;
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+
+        .info-card-clean {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .info-item-clean {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .info-item-clean:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .info-label-clean {
+            color: #888;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .info-value-clean {
+            color: #fff;
+            font-weight: 500;
+        }
+    </style>
+}
+
+<div class="staff-page-clean">
+    <div class="container">
+        <!-- Header -->
+        <div class="staff-header-clean">
+            <h1 class="staff-title-clean">
+                <i class="bi bi-people"></i>
+                Customer Management
+            </h1>
+            <p class="staff-subtitle-clean">
+                View and manage customer information
+            </p>
+        </div>
+
+        <!-- Alerts -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill"></i>
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <!-- Search and Filter Card -->
+        <div class="staff-card-clean">
+            <div class="staff-card-header-clean">
+                <h3 class="staff-card-title-clean">
+                    <i class="bi bi-funnel"></i>
+                    Search & Filters
+                </h3>
+            </div>
+            <div class="staff-card-body-clean">
+                <form method="get">
+                    <input type="hidden" name="pageNumber" value="1" />
+                    <input type="hidden" name="pageSize" asp-for="PageSize" />
+
+                    <!-- Modern Search Bar -->
+                    <div class="search-bar-clean">
+                        <i class="bi bi-search search-icon-clean"></i>
+                        <input type="text" class="search-input-clean" name="searchTerm"
+                               asp-for="SearchTerm"
+                               placeholder="Search by name, email or phone...">
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="filter-grid-clean">
+                        <div class="filter-group-clean">
+                            <label class="filter-label-clean">
+                                <i class="bi bi-calendar"></i>
+                                From Date
+                            </label>
+                            <input type="date" class="filter-input-clean" name="fromDate" asp-for="FromDate">
+                        </div>
+                        <div class="filter-group-clean">
+                            <label class="filter-label-clean">
+                                <i class="bi bi-calendar"></i>
+                                To Date
+                            </label>
+                            <input type="date" class="filter-input-clean" name="toDate" asp-for="ToDate">
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="filter-actions-clean">
+                        <button type="submit" class="btn-clean btn-primary-clean">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                        <a asp-page="Customers" class="btn-clean btn-secondary-clean">
+                            <i class="bi bi-x-circle"></i> Clear
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Customers List Card -->
+        <div class="staff-card-clean">
+            <div class="staff-card-header-clean">
+                <h3 class="staff-card-title-clean">
+                    <i class="bi bi-people-fill"></i>
+                    Customers
+                </h3>
+                @if (Model.Customers != null && Model.Customers.Any())
+                {
+                    <span style="color: #888; font-size: 0.875rem;">
+                        @Model.Customers.TotalCount customers
+                    </span>
+                }
+            </div>
+            <div style="padding: 0;">
+                @if (Model.Customers == null || !Model.Customers.Any())
+                {
+                    <div class="empty-state-clean">
+                        <div class="empty-icon-clean">
+                            <i class="bi bi-person-x"></i>
+                        </div>
+                        <h3 class="empty-title-clean">No Customers Found</h3>
+                        <p class="empty-description-clean">
+                            @if (!string.IsNullOrEmpty(Model.SearchTerm))
+                            {
+                                <span>Try adjusting your search criteria</span>
+                            }
+                            else
+                            {
+                                <span>No customers have registered yet</span>
+                            }
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <div style="overflow-x: auto;">
+                        <table class="table-clean">
+                            <thead>
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Registered</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var customer in Model.Customers)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="user-cell-clean">
+                                                <div class="user-avatar-clean">
+                                                    @customer.FullName.Substring(0, 1).ToUpper()
+                                                </div>
+                                                <div class="user-info-clean">
+                                                    <div class="user-name-clean">@customer.FullName</div>
+                                                    <div class="user-role-clean">Customer</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="info-with-icon-clean">
+                                                <i class="bi bi-envelope"></i>
+                                                @customer.Email
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="info-with-icon-clean">
+                                                <i class="bi bi-telephone"></i>
+                                                @customer.PhoneNumber
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="date-cell-clean">
+                                                <div class="date-primary-clean">
+                                                    @customer.CreatedAt.ToString("MMM dd, yyyy")
+                                                </div>
+                                                <div class="date-secondary-clean">
+                                                    @customer.CreatedAt.ToString("hh:mm tt")
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn-action-clean"
+                                                    onclick="viewCustomerDetails('@customer.Id')">
+                                                <i class="bi bi-eye"></i> Details
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    @if (Model.Customers.TotalPages > 1)
+                    {
+                        <div class="pagination-clean">
+                            @if (Model.Customers.HasPrevious)
+                            {
+                                <a class="page-btn-clean"
+                                   asp-page="Customers"
+                                   asp-route-pageNumber="@(Model.PageNumber - 1)"
+                                   asp-route-pageSize="@Model.PageSize"
+                                   asp-route-searchTerm="@Model.SearchTerm"
+                                   asp-route-fromDate="@Model.FromDate"
+                                   asp-route-toDate="@Model.ToDate">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            }
+
+                            @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.Customers.TotalPages, Model.PageNumber + 2); i++)
+                            {
+                                <a class="page-btn-clean @(Model.PageNumber == i ? "active" : "")"
+                                   asp-page="Customers"
+                                   asp-route-pageNumber="@i"
+                                   asp-route-pageSize="@Model.PageSize"
+                                   asp-route-searchTerm="@Model.SearchTerm"
+                                   asp-route-fromDate="@Model.FromDate"
+                                   asp-route-toDate="@Model.ToDate">
+                                    @i
+                                </a>
+                            }
+
+                            @if (Model.Customers.HasNext)
+                            {
+                                <a class="page-btn-clean"
+                                   asp-page="Customers"
+                                   asp-route-pageNumber="@(Model.PageNumber + 1)"
+                                   asp-route-pageSize="@Model.PageSize"
+                                   asp-route-searchTerm="@Model.SearchTerm"
+                                   asp-route-fromDate="@Model.FromDate"
+                                   asp-route-toDate="@Model.ToDate">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            }
+                        </div>
+
+                        <div class="pagination-info-clean">
+                            Showing @((Model.PageNumber - 1) * Model.PageSize + 1) to
+                            @Math.Min(Model.PageNumber * Model.PageSize, Model.Customers.TotalCount) of
+                            @Model.Customers.TotalCount customers
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Customer Details Modal -->
+<div class="modal fade" id="customerDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-clean">
+            <div class="modal-header-clean">
+                <h3 class="modal-title-clean">
+                    <i class="bi bi-person-circle"></i>
+                    Customer Details
+                </h3>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body-clean" id="customerDetailsContent">
+                <div style="text-align: center; padding: 2rem;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer-clean">
+                <button type="button" class="btn-clean btn-secondary-clean" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function viewCustomerDetails(customerId) {
+            const modal = new bootstrap.Modal(document.getElementById('customerDetailsModal'));
+            modal.show();
+
+            try {
+                const response = await fetch(`/Staff/Customers?handler=Details&id=${customerId}`);
+                const data = await response.json();
+
+                if (data.success && data.customer) {
+                    const customer = data.customer;
+                    const content = `
+                        <div style="text-align: center; margin-bottom: 2rem;">
+                            <div class="user-avatar-clean" style="width: 80px; height: 80px; font-size: 2rem; margin: 0 auto 1rem;">
+                                ${customer.fullName.substring(0, 1).toUpperCase()}
+                            </div>
+                            <h4 style="color: #fff; margin: 0;">${customer.fullName}</h4>
+                            <p style="color: #888; margin: 0.25rem 0;">Customer Account</p>
+                        </div>
+
+                        <div class="info-card-clean">
+                            <div class="info-item-clean">
+                                <div class="info-label-clean">
+                                    <i class="bi bi-envelope"></i> Email
+                                </div>
+                                <div class="info-value-clean">${customer.email}</div>
+                            </div>
+
+                            <div class="info-item-clean">
+                                <div class="info-label-clean">
+                                    <i class="bi bi-telephone"></i> Phone Number
+                                </div>
+                                <div class="info-value-clean">${customer.phoneNumber}</div>
+                            </div>
+
+                            <div class="info-item-clean">
+                                <div class="info-label-clean">
+                                    <i class="bi bi-calendar-plus"></i> Registered Date
+                                </div>
+                                <div class="info-value-clean">${new Date(customer.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+                            </div>
+
+                            <div class="info-item-clean">
+                                <div class="info-label-clean">
+                                    <i class="bi bi-hash"></i> Customer ID
+                                </div>
+                                <div class="info-value-clean" style="font-family: monospace;">${customer.id}</div>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('customerDetailsContent').innerHTML = content;
+                } else {
+                    document.getElementById('customerDetailsContent').innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-circle"></i>
+                            Failed to load customer details
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('customerDetailsContent').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-circle"></i>
+                        An error occurred while loading customer details
+                    </div>
+                `;
+            }
+        }
+
+        setTimeout(function () {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 300);
+            });
+        }, 5000);
+    </script>
+}

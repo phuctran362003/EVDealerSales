@@ -1,0 +1,246 @@
+﻿@page
+@model EVDealerSales.Presentation.Pages.Vehicle.CompareModel
+@{
+    ViewData["Title"] = "Compare Vehicles";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/vehicle.css" />
+    <style>
+        .compare-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .compare-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+            .compare-header h1 {
+                color: #fff;
+                font-size: 2rem;
+                margin-bottom: 0.5rem;
+            }
+
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 200px 1fr 1fr;
+            gap: 1rem;
+            background: #111;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+
+        .compare-label {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem 1rem;
+            background: #000;
+            border-right: 1px solid #333;
+            border-bottom: 1px solid #333;
+            color: #fff;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .compare-value {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem 1rem;
+            border-right: 1px solid #333;
+            border-bottom: 1px solid #333;
+            color: #ccc;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+            .compare-value.better {
+                background: linear-gradient(135deg, rgba(0, 212, 170, 0.1) 0%, rgba(0, 112, 243, 0.1) 100%);
+                color: #00d4aa;
+                font-weight: 600;
+                border: 2px solid #00d4aa;
+            }
+
+            .compare-value.worse {
+                opacity: 0.6;
+            }
+
+        .compare-vehicle-header {
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid #333;
+            background: #000;
+        }
+
+        .compare-vehicle-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .compare-vehicle-name {
+            color: #fff;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .compare-vehicle-price {
+            color: #0070f3;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #0070f3;
+            text-decoration: none;
+            margin-bottom: 2rem;
+            font-size: 0.875rem;
+        }
+
+            .back-link:hover {
+                color: #00d4aa;
+            }
+    </style>
+}
+
+<div class="compare-container">
+    <a asp-page="/Vehicle/BrowseVehicles" class="back-link">
+        <i class="fas fa-arrow-left"></i>
+        <span>Back to Browse</span>
+    </a>
+
+    <div class="compare-header">
+        <h1>
+            <i class="fas fa-balance-scale"></i>
+            Vehicle Comparison
+        </h1>
+        <p style="color: #666;">Compare specifications side by side</p>
+    </div>
+
+    <div class="compare-grid">
+        <!-- Header Row -->
+        <div class="compare-label"></div>
+        <div class="compare-vehicle-header">
+            <img src="@Model.Vehicle1.ImageUrl" alt="@Model.Vehicle1.ModelName" class="compare-vehicle-image" />
+            <div class="compare-vehicle-name">@Model.Vehicle1.ModelName @Model.Vehicle1.TrimName</div>
+            <div style="color: #666; font-size: 0.875rem; margin-bottom: 0.5rem;">@Model.Vehicle1.ModelYear</div>
+            <div class="compare-vehicle-price">$@Model.Vehicle1.BasePrice.ToString("N0")</div>
+        </div>
+        <div class="compare-vehicle-header">
+            <img src="@Model.Vehicle2.ImageUrl" alt="@Model.Vehicle2.ModelName" class="compare-vehicle-image" />
+            <div class="compare-vehicle-name">@Model.Vehicle2.ModelName @Model.Vehicle2.TrimName</div>
+            <div style="color: #666; font-size: 0.875rem; margin-bottom: 0.5rem;">@Model.Vehicle2.ModelYear</div>
+            <div class="compare-vehicle-price">$@Model.Vehicle2.BasePrice.ToString("N0")</div>
+        </div>
+
+        <!-- Battery Capacity -->
+        <div class="compare-label">
+            <i class="fas fa-battery-full" style="margin-right: 0.5rem; color: #0070f3;"></i>
+            Battery Capacity
+        </div>
+        <div class="compare-value @(Model.Vehicle1.BatteryCapacity > Model.Vehicle2.BatteryCapacity ? "better" : Model.Vehicle1.BatteryCapacity < Model.Vehicle2.BatteryCapacity ? "worse" : "")">
+            @Model.Vehicle1.BatteryCapacity kWh
+            @if (Model.Vehicle1.BatteryCapacity > Model.Vehicle2.BatteryCapacity)
+            {
+                <i class="fas fa-chevron-up" style="margin-left: 0.5rem;"></i>
+            }
+        </div>
+        <div class="compare-value @(Model.Vehicle2.BatteryCapacity > Model.Vehicle1.BatteryCapacity ? "better" : Model.Vehicle2.BatteryCapacity < Model.Vehicle1.BatteryCapacity ? "worse" : "")">
+            @Model.Vehicle2.BatteryCapacity kWh
+            @if (Model.Vehicle2.BatteryCapacity > Model.Vehicle1.BatteryCapacity)
+            {
+                <i class="fas fa-chevron-up" style="margin-left: 0.5rem;"></i>
+            }
+        </div>
+
+        <!-- Range -->
+        <div class="compare-label">
+            <i class="fas fa-road" style="margin-right: 0.5rem; color: #00d4aa;"></i>
+            Range
+        </div>
+        <div class="compare-value @(Model.Vehicle1.RangeKM > Model.Vehicle2.RangeKM ? "better" : Model.Vehicle1.RangeKM < Model.Vehicle2.RangeKM ? "worse" : "")">
+            @Model.Vehicle1.RangeKM km
+            @if (Model.Vehicle1.RangeKM > Model.Vehicle2.RangeKM)
+            {
+                <i class="fas fa-chevron-up" style="margin-left: 0.5rem;"></i>
+            }
+        </div>
+        <div class="compare-value @(Model.Vehicle2.RangeKM > Model.Vehicle1.RangeKM ? "better" : Model.Vehicle2.RangeKM < Model.Vehicle1.RangeKM ? "worse" : "")">
+            @Model.Vehicle2.RangeKM km
+            @if (Model.Vehicle2.RangeKM > Model.Vehicle1.RangeKM)
+            {
+                <i class="fas fa-chevron-up" style="margin-left: 0.5rem;"></i>
+            }
+        </div>
+
+        <!-- Charging Time (Lower is better) -->
+        <div class="compare-label">
+            <i class="fas fa-charging-station" style="margin-right: 0.5rem; color: #ff6b35;"></i>
+            Charging Time
+        </div>
+        <div class="compare-value @(Model.Vehicle1.ChargingTime < Model.Vehicle2.ChargingTime ? "better" : Model.Vehicle1.ChargingTime > Model.Vehicle2.ChargingTime ? "worse" : "")">
+            @Model.Vehicle1.ChargingTime hrs
+            @if (Model.Vehicle1.ChargingTime < Model.Vehicle2.ChargingTime)
+            {
+                <i class="fas fa-chevron-up" style="margin-left: 0.5rem;"></i>
+            }
+        </div>
+        <div class="compare-value @(Model.Vehicle2.ChargingTime < Model.Vehicle1.ChargingTime ? "better" : Model.Vehicle2.ChargingTime > Model.Vehicle1.ChargingTime ? "worse" : "")">
+            @Model.Vehicle2.ChargingTime hrs
+            @if (Model.Vehicle2.ChargingTime < Model.Vehicle1.ChargingTime)
+            {
+                <i class="fas fa-chevron-up" style="margin-left: 0.5rem;"></i>
+            }
+        </div>
+
+        <!-- Top Speed -->
+        <div class="compare-label">
+            <i class="fas fa-tachometer-alt" style="margin-right: 0.5rem; color: #ff6b35;"></i>
+            Top Speed
+        </div>
+        <div class="compare-value @(Model.Vehicle1.TopSpeed > Model.Vehicle2.TopSpeed ? "better" : Model.Vehicle1.TopSpeed < Model.Vehicle2.TopSpeed ? "worse" : "")">
+            @Model.Vehicle1.TopSpeed km/h
+            @if (Model.Vehicle1.TopSpeed > Model.Vehicle2.TopSpeed)
+            {
+                <i class="fas fa-chevron-up" style="margin-left: 0.5rem;"></i>
+            }
+        </div>
+        <div class="compare-value @(Model.Vehicle2.TopSpeed > Model.Vehicle1.TopSpeed ? "better" : Model.Vehicle2.TopSpeed < Model.Vehicle1.TopSpeed ? "worse" : "")">
+            @Model.Vehicle2.TopSpeed km/h
+            @if (Model.Vehicle2.TopSpeed > Model.Vehicle1.TopSpeed)
+            {
+                <i class="fas fa-chevron-up" style="margin-left: 0.5rem;"></i>
+            }
+        </div>
+
+        <!-- Base Price (Lower is better) -->
+        <div class="compare-label">
+            <i class="fas fa-dollar-sign" style="margin-right: 0.5rem; color: #0070f3;"></i>
+            Base Price
+        </div>
+        <div class="compare-value @(Model.Vehicle1.BasePrice < Model.Vehicle2.BasePrice ? "better" : Model.Vehicle1.BasePrice > Model.Vehicle2.BasePrice ? "worse" : "")">
+            $@Model.Vehicle1.BasePrice.ToString("N0")
+            @if (Model.Vehicle1.BasePrice < Model.Vehicle2.BasePrice)
+            {
+                <i class="fas fa-chevron-up" style="margin-left: 0.5rem;"></i>
+            }
+        </div>
+        <div class="compare-value @(Model.Vehicle2.BasePrice < Model.Vehicle1.BasePrice ? "better" : Model.Vehicle2.BasePrice > Model.Vehicle1.BasePrice ? "worse" : "")">
+            $@Model.Vehicle2.BasePrice.ToString("N0")
+            @if (Model.Vehicle2.BasePrice < Model.Vehicle1.BasePrice)
+            {
+                <i class="fas fa-chevron-up" style="margin-left: 0.5rem;"></i>
+            }
+        </div>
+    </div>
+</div>

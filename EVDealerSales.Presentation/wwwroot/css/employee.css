@@ -1,0 +1,721 @@
+﻿/* Employee Dashboard - Clean Vercel-inspired Design */
+
+/* Complete redesign to match Vercel dashboard aesthetic */
+/* Main Container */
+.employee-container {
+    background: #000;
+    min-height: 100vh;
+    padding: 1.5rem 0;
+}
+
+/* Page Header - Compact */
+.employee-header {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+    .employee-header h1 {
+        color: #fff;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .employee-header .header-actions {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        margin-top: 1rem;
+    }
+
+/* Clean Cards */
+.employee-card {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 8px;
+    transition: border-color 0.2s ease;
+}
+
+    .employee-card:hover {
+        border-color: #555;
+    }
+
+.employee-card-header {
+    background: #111;
+    border-bottom: 1px solid #333;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.employee-card-body {
+    padding: 1.5rem;
+    background: #111;
+}
+
+/* Modern Compact Buttons */
+.btn-modern {
+    background: #0070f3;
+    border: none;
+    color: #fff;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.875rem;
+    height: 32px;
+}
+
+    .btn-modern:hover {
+        background: #0060df;
+        color: #fff;
+    }
+
+.btn-modern-secondary {
+    background: #333;
+    border: none;
+    color: #fff;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.875rem;
+    height: 32px;
+}
+
+    .btn-modern-secondary:hover {
+        background: #444;
+        color: #fff;
+        border-color: #666;
+    }
+
+.btn-modern-danger {
+    background: #e00;
+    color: #fff;
+}
+
+    .btn-modern-danger:hover {
+        background: #c00;
+        color: #fff;
+    }
+
+.btn-modern-success {
+    background: #0a0;
+    color: #fff;
+}
+
+    .btn-modern-success:hover {
+        background: #080;
+        color: #fff;
+    }
+
+/* Clean Forms */
+.form-modern {
+    background: #111;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #333;
+}
+
+.form-group-modern {
+    margin-bottom: 1rem;
+}
+
+.form-label-modern {
+    color: #ccc;
+    font-weight: 500;
+    margin-bottom: 0.375rem;
+    display: block;
+    font-size: 0.875rem;
+}
+
+.form-control-modern {
+    background: #000;
+    border: 1px solid #333;
+    color: #fff;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    width: 100%;
+    transition: border-color 0.2s ease;
+    font-size: 0.875rem;
+    height: 36px;
+}
+
+    .form-control-modern:focus {
+        outline: none;
+        border-color: #0070f3;
+    }
+
+    .form-control-modern::placeholder {
+        color: #666;
+    }
+
+.form-row-modern {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+    .form-row-modern .form-group-modern {
+        flex: 1;
+        margin-bottom: 0;
+    }
+
+/* Clean Table - Vercel Style */
+.table-modern {
+    background: #111;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #333;
+}
+
+    .table-modern table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+    }
+
+    .table-modern thead {
+        background: #111;
+        border-bottom: 1px solid #333;
+    }
+
+        .table-modern thead th {
+            color: #ccc;
+            font-weight: 500;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.875rem;
+            border-right: 1px solid #333;
+        }
+
+            .table-modern thead th:last-child {
+                border-right: none;
+            }
+
+    .table-modern tbody tr {
+        border-bottom: 1px solid #222;
+        transition: background-color 0.2s ease;
+    }
+
+        .table-modern tbody tr:hover {
+            background: #1a1a1a;
+        }
+
+        .table-modern tbody tr:last-child {
+            border-bottom: none;
+        }
+
+    .table-modern tbody td {
+        padding: 0.75rem 1rem;
+        color: #fff;
+        font-size: 0.875rem;
+        border-right: 1px solid #222;
+    }
+
+        .table-modern tbody td:last-child {
+            border-right: none;
+        }
+
+/* Clean Status Badges */
+.status-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+    .status-badge.active {
+        background: #0a0;
+        color: #fff;
+    }
+
+    .status-badge.inactive {
+        background: #e00;
+        color: #fff;
+    }
+
+/* Clean Search Bar */
+.search-modern {
+    background: #000;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    color: #fff;
+    width: 100%;
+    transition: border-color 0.2s ease;
+    font-size: 0.875rem;
+    height: 36px;
+}
+
+    .search-modern:focus {
+        outline: none;
+        border-color: #0070f3;
+    }
+
+    .search-modern::placeholder {
+        color: #666;
+    }
+
+.search-container {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    align-items: center;
+}
+
+.search-filters {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+/* Enhanced Action Buttons - More visible and comprehensive */
+.action-buttons {
+    display: flex;
+    gap: 0.375rem;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.btn-action {
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #333;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #222;
+    color: #ccc;
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+    .btn-action:hover {
+        background: #333;
+        border-color: #555;
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-action.view {
+        background: #1a1a1a;
+        border-color: #0070f3;
+        color: #0070f3;
+    }
+
+        .btn-action.view:hover {
+            background: #0070f3;
+            border-color: #0070f3;
+            color: #fff;
+        }
+
+    .btn-action.edit {
+        background: #1a1a1a;
+        border-color: #f90;
+        color: #f90;
+    }
+
+        .btn-action.edit:hover {
+            background: #f90;
+            border-color: #f90;
+            color: #000;
+        }
+
+    .btn-action.toggle {
+        background: #1a1a1a;
+        border-color: #e00;
+        color: #e00;
+    }
+
+        .btn-action.toggle:hover {
+            background: #e00;
+            border-color: #e00;
+            color: #fff;
+        }
+
+        .btn-action.toggle.activate {
+            border-color: #0a0;
+            color: #0a0;
+        }
+
+            .btn-action.toggle.activate:hover {
+                background: #0a0;
+                border-color: #0a0;
+                color: #fff;
+            }
+
+/* Clean Alerts */
+.alert-modern {
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    border: 1px solid;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+    .alert-modern.success {
+        background: rgba(0, 170, 0, 0.1);
+        border-color: #0a0;
+        color: #0a0;
+    }
+
+    .alert-modern.error {
+        background: rgba(238, 0, 0, 0.1);
+        border-color: #e00;
+        color: #e00;
+    }
+
+/* Clean Pagination */
+.pagination-modern {
+    display: flex;
+    justify-content: center;
+    gap: 0.25rem;
+    margin-top: 1.5rem;
+}
+
+    .pagination-modern .page-link {
+        background: #222;
+        border: 1px solid #333;
+        color: #ccc;
+        padding: 0.5rem 0.75rem;
+        border-radius: 4px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        font-size: 0.875rem;
+        min-width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .pagination-modern .page-link:hover {
+            background: #333;
+            border-color: #555;
+            color: #fff;
+        }
+
+        .pagination-modern .page-link.active {
+            background: #0070f3;
+            border-color: #0070f3;
+            color: #fff;
+        }
+
+/* Employee Profile - Compact */
+.employee-profile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 8px;
+}
+
+.employee-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #0070f3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #fff;
+    border: 2px solid #333;
+}
+
+.employee-info h2 {
+    color: #fff;
+    margin: 0 0 0.25rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.employee-info p {
+    color: #666;
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+/* Clean Details Table */
+.details-table {
+    background: #111;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #333;
+}
+
+    .details-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .details-table th {
+        background: #111;
+        color: #ccc;
+        padding: 0.75rem 1rem;
+        text-align: left;
+        font-weight: 500;
+        width: 30%;
+        border-bottom: 1px solid #333;
+        font-size: 0.875rem;
+    }
+
+    .details-table td {
+        padding: 0.75rem 1rem;
+        color: #fff;
+        border-bottom: 1px solid #333;
+        font-size: 0.875rem;
+    }
+
+    .details-table tr:last-child th,
+    .details-table tr:last-child td {
+        border-bottom: none;
+    }
+
+/* Modal Dialogs - Clean */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 0;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 1.5rem 0 1.5rem;
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+    .modal-header h3 {
+        color: #fff;
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 600;
+    }
+
+.modal-close {
+    background: #222;
+    border: 1px solid #333;
+    color: #666;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0.375rem;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+    .modal-close:hover {
+        background: #333;
+        border-color: #555;
+        color: #fff;
+    }
+
+.modal-body {
+    color: #ccc;
+    padding: 1.5rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    background: #111;
+}
+
+    /* Enhanced button styling for modal */
+    .modal-footer .btn-modern-secondary,
+    .modal-footer .btn-modern-danger,
+    .modal-footer .btn-modern-success {
+        padding: 0.625rem 1.25rem;
+        font-weight: 500;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        min-width: 100px;
+        justify-content: center;
+    }
+
+    .modal-footer .btn-modern-secondary {
+        background: #222;
+        border: 1px solid #333;
+        color: #ccc;
+    }
+
+        .modal-footer .btn-modern-secondary:hover {
+            background: #333;
+            border-color: #555;
+            color: #fff;
+        }
+
+    .modal-footer .btn-modern-danger {
+        background: #e00;
+        border: 1px solid #e00;
+        color: #fff;
+    }
+
+        .modal-footer .btn-modern-danger:hover {
+            background: #c00;
+            border-color: #c00;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(238, 0, 0, 0.3);
+        }
+
+    .modal-footer .btn-modern-success {
+        background: #0a0;
+        border: 1px solid #0a0;
+        color: #fff;
+    }
+
+        .modal-footer .btn-modern-success:hover {
+            background: #080;
+            border-color: #080;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 170, 0, 0.3);
+        }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .employee-container {
+        padding: 1rem 0;
+    }
+
+    .employee-header {
+        padding: 1rem;
+    }
+
+        .employee-header h1 {
+            font-size: 1.25rem;
+        }
+
+        .employee-header .header-actions {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.5rem;
+        }
+
+    .employee-card-body {
+        padding: 1rem;
+    }
+
+    .form-row-modern {
+        flex-direction: column;
+        gap: 0;
+    }
+
+        .form-row-modern .form-group-modern {
+            margin-bottom: 1rem;
+        }
+
+    .search-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    .search-filters {
+        justify-content: space-between;
+    }
+
+    .table-modern {
+        overflow-x: auto;
+    }
+
+    .action-buttons {
+        flex-wrap: wrap;
+    }
+
+    .employee-profile {
+        padding: 0.75rem;
+    }
+
+    .modal-content {
+        margin: 1rem;
+        padding: 1rem;
+    }
+}

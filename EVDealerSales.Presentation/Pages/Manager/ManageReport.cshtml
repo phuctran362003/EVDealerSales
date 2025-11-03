@@ -1,0 +1,1006 @@
+﻿@page
+@model EVDealerSales.Presentation.Pages.Manager.ManageReportModel
+@{
+    ViewData["Title"] = "Reports & Analytics";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/staff-management.css" />
+    <style>
+        /* Enhanced Chatbot Styles */
+        #chatPrompt:focus {
+            outline: none !important;
+            border-color: #0070f3 !important;
+            box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.1) !important;
+            background: #0f0f0f !important;
+        }
+        
+        #askBtn:hover {
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 12px rgba(0, 112, 243, 0.3) !important;
+        }
+        
+        #askBtn:active {
+            transform: translateY(0) !important;
+        }
+        
+        #askBtn:disabled {
+            opacity: 0.6 !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+        }
+        
+        /* Smooth scrolling for responses */
+        #responses {
+            scroll-behavior: smooth;
+        }
+        
+        #responses::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #responses::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        #responses::-webkit-scrollbar-thumb {
+            background: #3a3a3a;
+            border-radius: 3px;
+        }
+        
+        #responses::-webkit-scrollbar-thumb:hover {
+            background: #4a4a4a;
+        }
+        
+        /* Enhanced table styling for chatbot responses */
+        #responses table {
+            background: rgba(255,255,255,0.02) !important;
+            border-radius: 8px !important;
+            overflow: hidden !important;
+            border: 1px solid #2a2a2a !important;
+            border-collapse: separate !important;
+            border-spacing: 0 !important;
+            width: 100% !important;
+        }
+        
+        #responses th {
+            background: rgba(0, 112, 243, 0.1) !important;
+            color: #0070f3 !important;
+            font-weight: 600 !important;
+            border-bottom: 1px solid #2a2a2a !important;
+            border-right: 1px solid #2a2a2a !important;
+            padding: 12px 16px !important;
+            text-align: left !important;
+            font-size: 0.9rem !important;
+        }
+        
+        #responses th:last-child {
+            border-right: none !important;
+        }
+        
+        #responses td {
+            border-bottom: 1px solid #1a1a1a !important;
+            border-right: 1px solid #1a1a1a !important;
+            padding: 12px 16px !important;
+            color: #e0e0e0 !important;
+            font-size: 0.9rem !important;
+            line-height: 1.4 !important;
+        }
+        
+        #responses td:last-child {
+            border-right: none !important;
+        }
+        
+        #responses tr:last-child td {
+            border-bottom: none !important;
+        }
+        
+        #responses tr:hover {
+            background: rgba(255,255,255,0.03) !important;
+        }
+        
+        #responses tr:hover td {
+            background: rgba(255,255,255,0.01) !important;
+        }
+    </style>
+}
+
+<div class="staff-page-clean">
+    <div class="container">
+        <!-- Header -->
+        <div class="staff-header-clean">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                    <h1 class="staff-title-clean">
+                        <i class="bi bi-bar-chart-line"></i>
+                        Reports & Analytics
+                    </h1>
+                    <p class="staff-subtitle-clean">
+                        Comprehensive business insights and performance metrics
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            <!-- Total Revenue -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 1.5rem; color: white; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; font-size: 5rem; opacity: 0.2;">
+                    <i class="bi bi-currency-dollar"></i>
+                </div>
+                <div style="position: relative; z-index: 1;">
+                    <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 0.5rem;">Total Revenue</div>
+                    <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem;">$@Model.TotalRevenue.ToString("N0")</div>
+                    <div style="font-size: 0.75rem; opacity: 0.8;">All time confirmed orders</div>
+                </div>
+            </div>
+
+            <!-- Total Orders -->
+            <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px; padding: 1.5rem; color: white; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; font-size: 5rem; opacity: 0.2;">
+                    <i class="bi bi-cart-check"></i>
+                </div>
+                <div style="position: relative; z-index: 1;">
+                    <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 0.5rem;">Total Orders</div>
+                    <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem;">@Model.TotalOrders</div>
+                    <div style="font-size: 0.75rem; opacity: 0.8;">@Model.PendingOrders pending</div>
+                </div>
+            </div>
+
+            <!-- Total Customers -->
+            <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 12px; padding: 1.5rem; color: white; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; font-size: 5rem; opacity: 0.2;">
+                    <i class="bi bi-people"></i>
+                </div>
+                <div style="position: relative; z-index: 1;">
+                    <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 0.5rem;">Total Customers</div>
+                    <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem;">@Model.TotalCustomers</div>
+                    <div style="font-size: 0.75rem; opacity: 0.8;">+@Model.NewCustomersThisMonth this month</div>
+                </div>
+            </div>
+
+            <!-- Test Drives -->
+            <div style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); border-radius: 12px; padding: 1.5rem; color: white; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; font-size: 5rem; opacity: 0.2;">
+                    <i class="bi bi-car-front"></i>
+                </div>
+                <div style="position: relative; z-index: 1;">
+                    <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 0.5rem;">Test Drives</div>
+                    <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem;">@Model.TotalTestDrives</div>
+                    <div style="font-size: 0.75rem; opacity: 0.8;">@Model.TestDriveConversionRate.ToString("F1")% conversion</div>
+                </div>
+            </div>
+
+            <!-- Average Order Value -->
+            <div style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 12px; padding: 1.5rem; color: white; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; font-size: 5rem; opacity: 0.2;">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+                <div style="position: relative; z-index: 1;">
+                    <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 0.5rem;">Avg Order Value</div>
+                    <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem;">$@Model.AverageOrderValue.ToString("N0")</div>
+                    <div style="font-size: 0.75rem; opacity: 0.8;">Per confirmed order</div>
+                </div>
+            </div>
+
+            <!-- On-Time Delivery -->
+            <div style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); border-radius: 12px; padding: 1.5rem; color: white; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; font-size: 5rem; opacity: 0.2;">
+                    <i class="bi bi-truck"></i>
+                </div>
+                <div style="position: relative; z-index: 1;">
+                    <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 0.5rem;">On-Time Delivery</div>
+                    <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem;">@Model.OnTimeDeliveryRate.ToString("F1")%</div>
+                    <div style="font-size: 0.75rem; opacity: 0.8;">@Model.ActiveDeliveries active deliveries</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Statistics Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            <!-- Total Feedbacks -->
+            <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); border-radius: 12px; padding: 1.5rem; color: #1a1a1a; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; font-size: 5rem; opacity: 0.15;">
+                    <i class="bi bi-chat-dots"></i>
+                </div>
+                <div style="position: relative; z-index: 1;">
+                    <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 0.5rem; font-weight: 700;">Total Feedbacks</div>
+                    <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem;">@Model.TotalFeedbacks</div>
+                    <div style="font-size: 0.75rem; opacity: 0.7;">Customer feedback received</div>
+                </div>
+            </div>
+
+            <!-- Pending Feedbacks -->
+            <div style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); border-radius: 12px; padding: 1.5rem; color: #1a1a1a; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; font-size: 5rem; opacity: 0.15;">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <div style="position: relative; z-index: 1;">
+                    <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 0.5rem; font-weight: 700;">Pending</div>
+                    <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem;">@Model.PendingFeedbacks</div>
+                    <div style="font-size: 0.75rem; opacity: 0.7;">Awaiting resolution</div>
+                </div>
+            </div>
+
+            <!-- Resolved Feedbacks -->
+            <div style="background: linear-gradient(135deg, #c2e9fb 0%, #a1c4fd 100%); border-radius: 12px; padding: 1.5rem; color: #1a1a1a; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; font-size: 5rem; opacity: 0.15;">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <div style="position: relative; z-index: 1;">
+                    <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 0.5rem; font-weight: 700;">Resolved</div>
+                    <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem;">@Model.ResolvedFeedbacks</div>
+                    <div style="font-size: 0.75rem; opacity: 0.7;">Successfully handled</div>
+                </div>
+            </div>
+
+            <!-- Resolution Rate -->
+            <div style="background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); border-radius: 12px; padding: 1.5rem; color: #1a1a1a; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; font-size: 5rem; opacity: 0.15;">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+                <div style="position: relative; z-index: 1;">
+                    <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 0.5rem; font-weight: 700;">Resolution Rate</div>
+                    <div style="font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem;">@Model.FeedbackResolutionRate.ToString("F1")%</div>
+                    <div style="font-size: 0.75rem; opacity: 0.7;">Team efficiency</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row 1 - Revenue Chart (Full Width) -->
+        <div style="margin-bottom: 1.5rem;">
+            <div class="staff-card-clean">
+                <div class="staff-card-header-clean">
+                    <h3 class="staff-card-title-clean">
+                        <i class="bi bi-graph-up-arrow"></i>
+                        Revenue Trend (Last 6 Months)
+                    </h3>
+                </div>
+                <div class="staff-card-body-clean">
+                    <canvas id="revenueChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row 2 -->
+        <div style="display: grid; grid-template-columns: 7fr 3fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <!-- Top Selling Vehicles -->
+            <div class="staff-card-clean">
+                <div class="staff-card-header-clean">
+                    <h3 class="staff-card-title-clean">
+                        <i class="bi bi-trophy"></i>
+                        Top Selling Vehicles
+                    </h3>
+                </div>
+                <div class="staff-card-body-clean">
+                    <canvas id="topVehiclesChart" height="130"></canvas>
+                </div>
+            </div>
+
+            <!-- Orders by Status Chart -->
+            <div class="staff-card-clean">
+                <div class="staff-card-header-clean">
+                    <h3 class="staff-card-title-clean">
+                        <i class="bi bi-pie-chart"></i>
+                        Orders by Status
+                    </h3>
+                </div>
+                <div class="staff-card-body-clean">
+                    <canvas id="ordersStatusChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row 3 -->
+        <div style="display: grid; grid-template-columns: 7fr 3fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <!-- Delivery Status Chart -->
+            <div class="staff-card-clean">
+                <div class="staff-card-header-clean">
+                    <h3 class="staff-card-title-clean">
+                        <i class="bi bi-truck"></i>
+                        Delivery Status
+                    </h3>
+                </div>
+                <div class="staff-card-body-clean">
+                    <canvas id="deliveryStatusChart" height="130"></canvas>
+                </div>
+            </div>
+
+            <!-- Feedback Status Chart -->
+            <div class="staff-card-clean">
+                <div class="staff-card-header-clean">
+                    <h3 class="staff-card-title-clean">
+                        <i class="bi bi-chat-dots"></i>
+                        Feedback Status
+                    </h3>
+                </div>
+                <div class="staff-card-body-clean">
+                    <canvas id="feedbackStatusChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Alerts -->
+        @if (Model.LowStockVehicles.Any() || Model.OutOfStockVehicles.Any())
+        {
+            <div class="staff-card-clean">
+                <div class="staff-card-header-clean" style="background: rgba(239, 68, 68, 0.1); border-bottom-color: rgba(239, 68, 68, 0.3);">
+                    <h3 class="staff-card-title-clean" style="color: #ef4444;">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Inventory Alerts
+                    </h3>
+                    <span style="color: #ef4444; font-size: 0.875rem; font-weight: 500;">
+                        @(Model.OutOfStockCount + Model.LowStockCount) vehicles need attention
+                    </span>
+                </div>
+                <div class="staff-card-body-clean">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <!-- Out of Stock -->
+                        @if (Model.OutOfStockVehicles.Any())
+                        {
+                            <div>
+                                <h4 style="color: #ef4444; font-size: 0.9rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="bi bi-x-circle-fill"></i>
+                                    Out of Stock (@Model.OutOfStockCount)
+                                </h4>
+                                @foreach (var vehicle in Model.OutOfStockVehicles)
+                                {
+                                    <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; border-radius: 6px; margin-bottom: 0.75rem;">
+                                        <img src="@vehicle.ImageUrl" alt="@vehicle.ModelName" style="width: 60px; height: 60px; border-radius: 6px; object-fit: cover;">
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 600; color: #fff; font-size: 0.9rem;">@vehicle.ModelName @vehicle.TrimName</div>
+                                            <div style="color: #ef4444; font-size: 0.8rem; font-weight: 600;">
+                                                <i class="bi bi-box-seam"></i> @vehicle.Stock units
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        <!-- Low Stock -->
+                        @if (Model.LowStockVehicles.Any())
+                        {
+                            <div>
+                                <h4 style="color: #f59e0b; font-size: 0.9rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+                                    Low Stock (@Model.LowStockCount)
+                                </h4>
+                                @foreach (var vehicle in Model.LowStockVehicles)
+                                {
+                                    <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: rgba(245, 158, 11, 0.1); border-left: 3px solid #f59e0b; border-radius: 6px; margin-bottom: 0.75rem;">
+                                        <img src="@vehicle.ImageUrl" alt="@vehicle.ModelName" style="width: 60px; height: 60px; border-radius: 6px; object-fit: cover;">
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 600; color: #fff; font-size: 0.9rem;">@vehicle.ModelName @vehicle.TrimName</div>
+                                            <div style="color: #f59e0b; font-size: 0.8rem; font-weight: 600;">
+                                                <i class="bi bi-box-seam"></i> @vehicle.Stock units left
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Manager AI Assistant - Below Inventory Alerts -->
+        <div style="margin-bottom: 2rem;">
+            <div class="staff-card-clean" style="background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); border: 1px solid #2a2a2a; box-shadow: 0 8px 32px rgba(0, 112, 243, 0.1);">
+                <div class="staff-card-header-clean" style="background: linear-gradient(135deg, #0070f3 0%, #0051cc 100%); border-bottom: 1px solid #0070f3;">
+                    <h3 class="staff-card-title-clean" style="color: #fff; font-size: 1.25rem;">
+                        <i class="bi bi-robot" style="color: #fff; margin-right: 0.75rem;"></i>
+                        AI Business Assistant
+                    </h3>
+                    <span style="color: rgba(255,255,255,0.9); font-size: 0.875rem; font-weight: 500;">
+                        Get instant insights and recommendations
+                    </span>
+                </div>
+                <div class="staff-card-body-clean" style="padding: 2rem;">
+                    <div id="chatArea">
+                        <!-- Input Section -->
+                        <div style="background: rgba(255,255,255,0.02); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #2a2a2a;">
+                            <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                                <div style="flex: 1;">
+                                    <label style="display: block; color: #fff; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                        Ask your business questions
+                                    </label>
+                                    <textarea 
+                                        id="chatPrompt" 
+                                        class="form-control" 
+                                        placeholder="e.g., What are the top performing vehicles this month? How can we improve customer satisfaction? What inventory adjustments should we make?" 
+                                        rows="3" 
+                                        style="background: #0b0b0b; color: #fff; border: 1px solid #3a3a3a; border-radius: 8px; padding: 0.75rem; font-size: 0.9rem; resize: vertical; transition: all 0.2s ease;">
+                                    </textarea>
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-end; margin-top: 1.5rem;">
+                                    <button 
+                                        id="askBtn" 
+                                        type="button" 
+                                        class="btn-clean btn-primary-clean" 
+                                        style="background: linear-gradient(135deg, #0070f3 0%, #0051cc 100%); border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; transition: all 0.2s ease; min-width: 80px;">
+                                        Ask
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Responses Section -->
+                        <div id="responses" style="max-height: 400px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #3a3a3a transparent;">
+                            <div style="text-align: center; color: #666; padding: 2rem; font-style: italic; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px dashed #3a3a3a;">
+                                <i class="bi bi-lightbulb" style="font-size: 2rem; color: #0070f3; margin-bottom: 0.5rem; display: block;"></i>
+                                <div style="font-size: 0.9rem; margin-bottom: 0.5rem;">Ready to help with business insights!</div>
+                                <div style="font-size: 0.8rem; opacity: 0.7;">Ask about sales trends, inventory management, customer feedback, or any business questions.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        // Chart.js Configuration
+        Chart.defaults.color = '#888';
+        Chart.defaults.borderColor = '#1a1a1a';
+        Chart.defaults.backgroundColor = '#0a0a0a';
+        Chart.defaults.font.family = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+
+        // Revenue Trend Chart
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyRevenue.Select(m => m.MonthName))),
+                datasets: [{
+                    label: 'Revenue',
+                    data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyRevenue.Select(m => m.Revenue))),
+                    borderColor: '#0070f3',
+                    backgroundColor: 'rgba(0, 112, 243, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#0070f3',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#000',
+                        titleColor: '#fff',
+                        bodyColor: '#ccc',
+                        borderColor: '#0070f3',
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return 'Revenue: $' + context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        },
+                        grid: { color: '#1a1a1a' }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Orders by Status Chart (Only use Pending, Confirmed, Cancelled)
+        const ordersStatusCtx = document.getElementById('ordersStatusChart').getContext('2d');
+        const ordersStatusChart = new Chart(ordersStatusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Pending', 'Confirmed', 'Cancelled'],
+                datasets: [{
+                    data: [
+                        @(Model.OrdersByStatus.GetValueOrDefault(BusinessObject.Enums.OrderStatus.Pending, 0)),
+                        @(Model.OrdersByStatus.GetValueOrDefault(BusinessObject.Enums.OrderStatus.Confirmed, 0)),
+                        @(Model.OrdersByStatus.GetValueOrDefault(BusinessObject.Enums.OrderStatus.Cancelled, 0))
+                    ],
+                    backgroundColor: ['#f59e0b', '#0070f3', '#ef4444'],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#000',
+                        titleColor: '#fff',
+                        bodyColor: '#ccc',
+                        borderColor: '#0070f3',
+                        borderWidth: 1,
+                        padding: 12
+                    }
+                }
+            }
+        });
+
+        // Top Vehicles Chart with different colors for each bar
+        const topVehiclesCtx = document.getElementById('topVehiclesChart').getContext('2d');
+        const topVehiclesData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TopSellingVehicles.Select(v => v.UnitsSold)));
+        
+        // Define a vibrant color palette for vehicle bars
+        const vehicleColors = [
+            '#0070f3', // Blue
+            '#7c3aed', // Purple
+            '#ec4899', // Pink
+            '#f59e0b', // Amber
+            '#10b981'  // Green
+        ];
+        
+        // Assign colors based on data length
+        const backgroundColors = topVehiclesData.map((_, index) => vehicleColors[index % vehicleColors.length]);
+        
+        const topVehiclesChart = new Chart(topVehiclesCtx, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TopSellingVehicles.Select(v => v.ModelName + " " + v.TrimName))),
+                datasets: [{
+                    label: 'Units Sold',
+                    data: topVehiclesData,
+                    backgroundColor: backgroundColors,
+                    borderRadius: 6,
+                    barThickness: 40
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                indexAxis: 'y',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#000',
+                        titleColor: '#fff',
+                        bodyColor: '#ccc',
+                        borderColor: '#0070f3',
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: true,
+                        callbacks: {
+                            label: function(context) {
+                                return 'Units Sold: ' + context.parsed.x;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: { color: '#1a1a1a' },
+                        ticks: {
+                            precision: 0
+                        }
+                    },
+                    y: { 
+                        grid: { display: false },
+                        ticks: {
+                            font: {
+                                size: 11
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Delivery Status Chart
+        const deliveryStatusCtx = document.getElementById('deliveryStatusChart').getContext('2d');
+        const deliveryStatusChart = new Chart(deliveryStatusCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Pending', 'Scheduled', 'In Transit', 'Delivered', 'Cancelled'],
+                datasets: [{
+                    label: 'Count',
+                    data: [
+                        @(Model.DeliveriesByStatus.GetValueOrDefault(BusinessObject.Enums.DeliveryStatus.Pending, 0)),
+                        @(Model.DeliveriesByStatus.GetValueOrDefault(BusinessObject.Enums.DeliveryStatus.Scheduled, 0)),
+                        @(Model.DeliveriesByStatus.GetValueOrDefault(BusinessObject.Enums.DeliveryStatus.InTransit, 0)),
+                        @(Model.DeliveriesByStatus.GetValueOrDefault(BusinessObject.Enums.DeliveryStatus.Delivered, 0)),
+                        @(Model.DeliveriesByStatus.GetValueOrDefault(BusinessObject.Enums.DeliveryStatus.Cancelled, 0))
+                    ],
+                    backgroundColor: ['#888', '#0070f3', '#f59e0b', '#22c55e', '#ef4444'],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#000',
+                        titleColor: '#fff',
+                        bodyColor: '#ccc',
+                        borderColor: '#0070f3',
+                        borderWidth: 1,
+                        padding: 12,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#1a1a1a' }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Feedback Status Chart
+        const feedbackStatusCtx = document.getElementById('feedbackStatusChart').getContext('2d');
+        const feedbackStatusChart = new Chart(feedbackStatusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Pending', 'Resolved'],
+                datasets: [{
+                    data: [@Model.PendingFeedbacks, @Model.ResolvedFeedbacks],
+                    backgroundColor: ['#f59e0b', '#22c55e'],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#000',
+                        titleColor: '#fff',
+                        bodyColor: '#ccc',
+                        borderColor: '#0070f3',
+                        borderWidth: 1,
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <!-- SignalR and Manager Chatbot script (Ask-only) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.7/signalr.min.js" integrity="sha512-kmFd2qZsz5s7Zr5q2T6b5u1T1YpWZp0z3KqQYkJq3qY6g/2f5S2sOj5yqkG6G9vQb0TnQ7J7m0Q2c1J0fG5z/w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        (function () {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl('/chatbotHub')
+                .withAutomaticReconnect()
+                .build();
+
+            const responses = document.getElementById('responses');
+            const askBtn = document.getElementById('askBtn');
+            const chatPrompt = document.getElementById('chatPrompt');
+
+            function createResponseElement(text) {
+                const wrapper = document.createElement('div');
+                wrapper.style.background = 'rgba(255,255,255,0.03)';
+                wrapper.style.padding = '1.5rem';
+                wrapper.style.borderRadius = '12px';
+                wrapper.style.marginBottom = '1rem';
+                wrapper.style.border = '1px solid #2a2a2a';
+                wrapper.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+
+                const header = document.createElement('div');
+                header.style.fontWeight = '700';
+                header.style.color = '#0070f3';
+                header.style.marginBottom = '0.75rem';
+                header.style.fontSize = '0.9rem';
+                header.style.display = 'flex';
+                header.style.alignItems = 'center';
+                header.style.gap = '0.5rem';
+                header.innerHTML = '<i class="bi bi-robot"></i> AI Assistant Response';
+
+                const pre = document.createElement('pre');
+                pre.style.whiteSpace = 'pre-wrap';
+                pre.style.color = '#e0e0e0';
+                pre.style.margin = '0';
+                pre.style.lineHeight = '1.6';
+                pre.style.fontSize = '0.9rem';
+                pre.textContent = text || '';
+
+                wrapper.appendChild(header);
+                wrapper.appendChild(pre);
+                return wrapper;
+            }
+
+            function createResponseElementFromNode(node) {
+                const wrapper = document.createElement('div');
+                wrapper.style.background = 'rgba(255,255,255,0.03)';
+                wrapper.style.padding = '1.5rem';
+                wrapper.style.borderRadius = '12px';
+                wrapper.style.marginBottom = '1rem';
+                wrapper.style.border = '1px solid #2a2a2a';
+                wrapper.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+
+                const header = document.createElement('div');
+                header.style.fontWeight = '700';
+                header.style.color = '#0070f3';
+                header.style.marginBottom = '0.75rem';
+                header.style.fontSize = '0.9rem';
+                header.style.display = 'flex';
+                header.style.alignItems = 'center';
+                header.style.gap = '0.5rem';
+                header.innerHTML = '<i class="bi bi-robot"></i> AI Assistant Response';
+
+                wrapper.appendChild(header);
+                wrapper.appendChild(node);
+                return wrapper;
+            }
+
+            function createTableFromHtml(htmlString) {
+                const tmp = document.createElement('div');
+                tmp.innerHTML = htmlString;
+                const items = tmp.querySelectorAll('li');
+                if (!items || items.length === 0) {
+                    const pre = document.createElement('pre');
+                    pre.style.whiteSpace = 'pre-wrap';
+                    pre.style.color = '#ddd';
+                    pre.style.margin = '0';
+                    pre.textContent = htmlString;
+                    return pre;
+                }
+
+                const table = document.createElement('table');
+                table.style.width = '100%';
+                table.style.borderCollapse = 'collapse';
+
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                const th1 = document.createElement('th');
+                th1.textContent = 'Item';
+                th1.style.textAlign = 'left';
+                th1.style.padding = '0.5rem';
+                th1.style.color = '#fff';
+                const th2 = document.createElement('th');
+                th2.textContent = 'Recommendation';
+                th2.style.textAlign = 'left';
+                th2.style.padding = '0.5rem';
+                th2.style.color = '#fff';
+                headerRow.appendChild(th1);
+                headerRow.appendChild(th2);
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+
+                const tbody = document.createElement('tbody');
+                items.forEach(li => {
+                    const strong = li.querySelector('strong');
+                    let item = '';
+                    let recommendation = li.innerHTML || li.textContent || '';
+                    if (strong) {
+                        item = strong.textContent.trim();
+                        const clone = li.cloneNode(true);
+                        const s = clone.querySelector('strong');
+                        if (s) s.remove();
+                        recommendation = clone.textContent.replace(/^:\s*/, '').trim();
+                    } else {
+                        const text = li.textContent || '';
+                        const parts = text.split(':');
+                        if (parts.length > 1) {
+                            item = parts[0].trim();
+                            recommendation = parts.slice(1).join(':').trim();
+                        } else {
+                            item = text.trim();
+                            recommendation = '';
+                        }
+                    }
+
+                    const row = document.createElement('tr');
+                    const td1 = document.createElement('td');
+                    td1.style.padding = '0.5rem';
+                    td1.style.verticalAlign = 'top';
+                    td1.style.color = '#ddd';
+                    td1.innerHTML = '<strong style="color:#fff;">' + item + '</strong>';
+
+                    const td2 = document.createElement('td');
+                    td2.style.padding = '0.5rem';
+                    td2.style.color = '#ddd';
+                    td2.textContent = recommendation;
+
+                    row.appendChild(td1);
+                    row.appendChild(td2);
+                    tbody.appendChild(row);
+                });
+
+                table.appendChild(tbody);
+                return table;
+            }
+
+            function sanitizeHtmlTable(htmlString) {
+                if (!htmlString) return null;
+                const tmp = document.createElement('div');
+                tmp.innerHTML = htmlString;
+                const table = tmp.querySelector('table');
+                const container = document.createElement('div');
+
+                function sanitizeNode(node, outParent) {
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        outParent.appendChild(document.createTextNode(node.textContent));
+                        return;
+                    }
+                    if (node.nodeType !== Node.ELEMENT_NODE) return;
+
+                    const tag = node.tagName.toLowerCase();
+                    const allowed = {
+                        'table': true,
+                        'thead': true,
+                        'tbody': true,
+                        'tr': true,
+                        'th': true,
+                        'td': true,
+                        'strong': true,
+                        'b': true,
+                        'em': true,
+                        'i': true,
+                        'u': true,
+                        'br': true
+                    };
+
+                    if (!allowed[tag]) {
+                        node.childNodes.forEach(child => sanitizeNode(child, outParent));
+                        return;
+                    }
+
+                    const el = document.createElement(tag);
+                    if (tag === 'th' || tag === 'td') {
+                        const colspan = node.getAttribute && node.getAttribute('colspan');
+                        const rowspan = node.getAttribute && node.getAttribute('rowspan');
+                        if (colspan && /^\d+$/.test(colspan)) el.setAttribute('colspan', colspan);
+                        if (rowspan && /^\d+$/.test(rowspan)) el.setAttribute('rowspan', rowspan);
+                    }
+
+                    node.childNodes.forEach(child => sanitizeNode(child, el));
+                    outParent.appendChild(el);
+                }
+
+                if (table) {
+                    sanitizeNode(table, container);
+                    return container.firstElementChild || container;
+                }
+
+                tmp.childNodes.forEach(n => sanitizeNode(n, container));
+                return container;
+            }
+
+            function formatPayload(payload) {
+                if (!payload) return '';
+                if (typeof payload === 'string') return payload;
+                const resp = payload.Response || payload.response || payload.message || payload.text;
+                if (resp) {
+                    if (typeof resp === 'string') return resp;
+                    try { return JSON.stringify(resp, null, 2); } catch (e) { return String(resp); }
+                }
+                try { return JSON.stringify(payload, null, 2); } catch (e) { return String(payload); }
+            }
+
+            let lastPendingElement = null;
+
+            connection.on('ReceiveChatbotResponse', function (payload) {
+                const rawResp = payload && (payload.Response || payload.response || payload) || '';
+                const responseHtml = payload && (payload.ResponseHtml || payload.responseHtml || null);
+
+                if (responseHtml) {
+                    const safeNode = sanitizeHtmlTable(responseHtml);
+                    if (lastPendingElement) {
+                        if (safeNode) lastPendingElement.replaceWith(createResponseElementFromNode(safeNode));
+                        else {
+                            const pre = lastPendingElement.querySelector('pre');
+                            if (pre) pre.textContent = formatPayload(rawResp || payload);
+                        }
+                        lastPendingElement = null;
+                        return;
+                    }
+
+                    if (safeNode) { responses.prepend(createResponseElementFromNode(safeNode)); return; }
+                }
+
+                const text = (typeof rawResp === 'string') ? rawResp : (typeof rawResp === 'object' ? JSON.stringify(rawResp) : String(rawResp));
+                const looksLikeHtmlList = /<\s*(ul|ol)\b|<\s*li\b|&lt;\s*(ul|ol)\b|&lt;\s*li\b/i.test(text);
+
+                if (lastPendingElement) {
+                    if (looksLikeHtmlList) {
+                        const table = createTableFromHtml(text);
+                        const newEl = createResponseElementFromNode(table);
+                        lastPendingElement.replaceWith(newEl);
+                    } else {
+                        const pre = lastPendingElement.querySelector('pre');
+                        if (pre) pre.textContent = formatPayload(payload);
+                    }
+                    lastPendingElement = null;
+                } else {
+                    if (looksLikeHtmlList) {
+                        const table = createTableFromHtml(text);
+                        responses.prepend(createResponseElementFromNode(table));
+                    } else {
+                        responses.prepend(createResponseElement(formatPayload(payload)));
+                    }
+                }
+            });
+
+            connection.on('ReceiveChatbotError', function (payload) {
+                const msg = 'Error: ' + (payload && (payload.Error || payload.error || payload.message) || 'Unknown error');
+                if (lastPendingElement) {
+                    const pre = lastPendingElement.querySelector('pre');
+                    if (pre) pre.textContent = msg;
+                    lastPendingElement = null;
+                } else {
+                    responses.prepend(createResponseElement(msg));
+                }
+            });
+
+            askBtn.disabled = true;
+            let sessionGroupId = 'manager-' + Math.random().toString(36).substring(2, 9);
+
+            connection.start().then(function () {
+                connection.invoke('JoinChatGroup', sessionGroupId)
+                    .then(function () { askBtn.disabled = false; })
+                    .catch(err => { console.error('JoinChatGroup failed:', err.toString()); askBtn.disabled = false; });
+            }).catch(err => console.error('Connection start failed:', err.toString()));
+
+            askBtn.addEventListener('click', function () {
+                const prompt = chatPrompt.value;
+                if (!prompt || prompt.trim().length === 0) {
+                    alert('Please enter a prompt.');
+                    return;
+                }
+
+                connection.invoke('AskChatbot', prompt, sessionGroupId)
+                    .catch(err => {
+                        console.error(err.toString());
+                        responses.prepend(createResponseElement('Error sending request: ' + err.toString()));
+                    });
+
+                lastPendingElement = createResponseElement('🤖 AI Assistant is analyzing your request...');
+                responses.prepend(lastPendingElement);
+                chatPrompt.value = '';
+            });
+        })();
+    </script>
+}

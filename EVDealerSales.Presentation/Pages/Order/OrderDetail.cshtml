@@ -1,0 +1,1154 @@
+@page
+@using EVDealerSales.BusinessObject.Enums
+@model EVDealerSales.Presentation.Pages.Order.OrderDetailModel
+@{
+    ViewData["Title"] = "Order Details";
+
+    var currentUser = User;
+    var isStaff = currentUser.IsInRole("DealerStaff") || currentUser.IsInRole("DealerManager");
+
+    string GetDeliveryStatusBadgeClass(DeliveryStatus status)
+    {
+        return status switch
+        {
+            DeliveryStatus.Pending => "badge bg-warning",
+            DeliveryStatus.Scheduled => "badge bg-info",
+            DeliveryStatus.InTransit => "badge bg-primary",
+            DeliveryStatus.Delivered => "badge bg-success",
+            DeliveryStatus.Cancelled => "badge bg-danger",
+            _ => "badge bg-secondary"
+        };
+    }
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/order.css" />
+    <style>
+        .order-detail-clean {
+            background: #000;
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .order-detail-clean .order-detail-header {
+            margin-bottom: 2rem;
+        }
+
+        .order-detail-clean .order-hero {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            border: 1px solid #1a1a1a;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .order-detail-clean .order-hero-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .order-detail-clean .order-hero-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0;
+        }
+
+        .order-detail-clean .order-hero-number {
+            font-size: 1.1rem;
+            color: #888;
+            margin-top: 0.5rem;
+        }
+
+        .order-detail-clean .order-hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .order-detail-clean .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .order-detail-clean .stat-label {
+            font-size: 0.875rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .order-detail-clean .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .order-detail-clean .stat-value.amount {
+            color: #00d4aa;
+        }
+
+        /* Two-column layout for delivery + vehicle */
+        .order-detail-clean .delivery-vehicle-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .order-detail-clean .vehicle-showcase {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 16px;
+            padding: 2rem;
+            height: 100%;
+        }
+
+        .order-detail-clean .showcase-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #fff;
+            margin: 0 0 1.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .order-detail-clean .showcase-title i {
+            color: #0070f3;
+        }
+
+        .order-detail-clean .vehicle-showcase-item {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #111 0%, #1a1a1a 100%);
+            border: 1px solid #1a1a1a;
+            border-radius: 12px;
+        }
+
+        .order-detail-clean .vehicle-showcase-image {
+            width: 100%;
+            height: 180px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .order-detail-clean .vehicle-showcase-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .order-detail-clean .vehicle-showcase-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .order-detail-clean .vehicle-showcase-info h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .order-detail-clean .vehicle-showcase-info .year {
+            font-size: 0.95rem;
+            color: #888;
+            margin-bottom: 1rem;
+        }
+
+        .order-detail-clean .vehicle-showcase-info .price {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #f4f4f5;
+        }
+
+        .order-detail-clean .delivery-tracker {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 16px;
+            padding: 2rem;
+            height: 100%;
+        }
+
+        .order-detail-clean .tracker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .order-detail-clean .delivery-timeline-modern {
+            position: relative;
+            padding: 1rem 0;
+        }
+
+        .order-detail-clean .timeline-step {
+            position: relative;
+            padding-left: 4rem;
+            padding-bottom: 2rem;
+        }
+
+        .order-detail-clean .timeline-step:last-child {
+            padding-bottom: 0;
+        }
+
+        .order-detail-clean .timeline-step::before {
+            content: '';
+            position: absolute;
+            left: 1.25rem;
+            top: 2.5rem;
+            width: 2px;
+            height: calc(100% - 2rem);
+            background: #1a1a1a;
+        }
+
+        .order-detail-clean .timeline-step:last-child::before {
+            display: none;
+        }
+
+        .order-detail-clean .timeline-step.completed::before {
+            background: #22c55e;
+        }
+
+        .order-detail-clean .timeline-step.cancelled::before {
+            background: #ef4444;
+        }
+
+        .order-detail-clean .timeline-icon {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: #111;
+            border: 2px solid #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .order-detail-clean .timeline-step.completed .timeline-icon {
+            background: #22c55e;
+            border-color: #22c55e;
+        }
+
+        .order-detail-clean .timeline-step.cancelled .timeline-icon {
+            background: #ef4444;
+            border-color: #ef4444;
+        }
+
+        .order-detail-clean .timeline-icon i {
+            font-size: 1.25rem;
+            color: #666;
+        }
+
+        .order-detail-clean .timeline-step.completed .timeline-icon i,
+        .order-detail-clean .timeline-step.cancelled .timeline-icon i {
+            color: #fff;
+        }
+
+        .order-detail-clean .timeline-step-content h6 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .order-detail-clean .timeline-step-content p {
+            font-size: 0.875rem;
+            color: #888;
+            margin: 0;
+        }
+
+        .order-detail-clean .timeline-step-content .badge {
+            margin-top: 0.5rem;
+        }
+
+        .order-detail-clean .delivery-details {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        .order-detail-clean .detail-row {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: #111;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .order-detail-clean .detail-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .order-detail-clean .detail-row i {
+            color: #0070f3;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .order-detail-clean .detail-row-content {
+            flex: 1;
+        }
+
+        .order-detail-clean .detail-row-label {
+            font-size: 0.875rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+
+        .order-detail-clean .detail-row-value {
+            font-size: 1rem;
+            color: #fff;
+        }
+
+        .order-detail-clean .action-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .order-detail-clean .action-section .btn {
+            padding: 0.875rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .order-detail-clean .action-section .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .order-detail-clean .info-notice {
+            padding: 1rem 1.25rem;
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 3px solid #3b82f6;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .order-detail-clean .info-notice i {
+            color: #3b82f6;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .order-detail-clean .info-notice p {
+            margin: 0;
+            color: #aaa;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .order-detail-clean .notes-section {
+            background: #111;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .order-detail-clean .notes-section p {
+            margin: 0;
+            color: #ccc;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Modal Styles */
+        #feedbackModal .modal-header,
+        #requestDeliveryModal .modal-header {
+            background: linear-gradient(135deg, #0a0a0a 0%, #111 100%);
+            border-bottom: 2px solid #1a1a1a;
+        }
+
+        #feedbackModal .modal-title,
+        #requestDeliveryModal .modal-title {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        #feedbackModal .modal-body,
+        #requestDeliveryModal .modal-body {
+            background: #0a0a0a;
+            padding: 2rem;
+        }
+
+        #feedbackModal .alert-info,
+        #requestDeliveryModal .alert-info {
+            background-color: rgba(59, 130, 246, 0.05);
+            border-left: 4px solid #3b82f6;
+            color: #aaa;
+            border-radius: 6px;
+            padding: 1rem;
+            display: flex;
+            align-items: start;
+            gap: 0.75rem;
+        }
+
+        #feedbackModal .alert-info i,
+        #requestDeliveryModal .alert-info i {
+            color: #3b82f6;
+            font-size: 1.25rem;
+            margin-top: 2px;
+        }
+
+        #feedbackModal .form-label,
+        #requestDeliveryModal .form-label {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        #feedbackModal .form-label i,
+        #requestDeliveryModal .form-label i {
+            color: #0070f3;
+        }
+
+        #feedbackModal .form-control,
+        #requestDeliveryModal .form-control {
+            background: #111;
+            border: 1px solid #1a1a1a;
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: #fff;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        #feedbackModal .form-control:focus,
+        #requestDeliveryModal .form-control:focus {
+            background: #1a1a1a;
+            border-color: #0070f3;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.1);
+        }
+
+        #feedbackModal .form-text,
+        #requestDeliveryModal .form-text {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        #feedbackModal .order-summary-box,
+        #requestDeliveryModal .order-summary-box {
+            background: #111;
+            border: 1px solid #1a1a1a;
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+        }
+
+        #feedbackModal .order-summary-box h6,
+        #requestDeliveryModal .order-summary-box h6 {
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        #feedbackModal .order-summary-box h6 i,
+        #requestDeliveryModal .order-summary-box h6 i {
+            color: #0070f3;
+        }
+
+        #feedbackModal .order-summary-box .d-flex,
+        #requestDeliveryModal .order-summary-box .d-flex {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        #feedbackModal .order-summary-box .d-flex:last-child,
+        #requestDeliveryModal .order-summary-box .d-flex:last-child {
+            border-bottom: none;
+        }
+
+        #feedbackModal .order-summary-box span,
+        #requestDeliveryModal .order-summary-box span {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        #feedbackModal .order-summary-box strong,
+        #requestDeliveryModal .order-summary-box strong {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        #feedbackModal .modal-footer,
+        #requestDeliveryModal .modal-footer {
+            background-color: #0a0a0a;
+            border-top: 2px solid #1a1a1a;
+            padding: 1.25rem;
+        }
+
+        #feedbackModal .modal-footer .btn,
+        #requestDeliveryModal .modal-footer .btn {
+            padding: 0.625rem 1.5rem;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        @@media (max-width: 992px) {
+            .order-detail-clean .delivery-vehicle-row {
+                grid-template-columns: 1fr;
+            }
+
+            .order-detail-clean .order-hero-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .order-detail-clean .order-hero-stats {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .order-detail-clean .tracker-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+}
+
+<div class="order-detail-clean">
+    <div class="container">
+        <div class="order-detail-header">
+            @if (isStaff)
+            {
+                <a asp-page="/Staff/ManageOrders" class="btn-back">
+                    <i class="bi bi-arrow-left"></i> Back to Manage Orders
+                </a>
+            }
+            else
+            {
+                <a asp-page="/Order/MyOrders" class="btn-back">
+                    <i class="bi bi-arrow-left"></i> Back to My Orders
+                </a>
+            }
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                @Model.ErrorMessage
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (Model.Order != null)
+        {
+            <!-- Order Hero Section -->
+            <div class="order-hero">
+                <div class="order-hero-header">
+                    <div>
+                        <h1 class="order-hero-title">Order Complete</h1>
+                        <p class="order-hero-number">#@Model.Order.OrderNumber</p>
+                    </div>
+                    <span class="@(Model.Order.Status == OrderStatus.Confirmed ? "badge badge-success" :
+                                   Model.Order.Status == OrderStatus.Cancelled ? "badge badge-danger" :
+                                   "badge badge-warning")">
+                        @Model.Order.Status.ToString()
+                    </span>
+                </div>
+
+                <div class="order-hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Order Date</span>
+                        <span class="stat-value">@Model.Order.CreatedAt.ToString("MMM dd, yyyy")</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total Amount</span>
+                        <span class="stat-value amount">$@Model.Order.TotalAmount.ToString("N0")</span>
+                    </div>
+                    @if (Model.Order.PaymentStatus.HasValue)
+                    {
+                        <div class="stat-item">
+                            <span class="stat-label">Payment Status</span>
+                            <span class="stat-value" style="color: @(Model.Order.PaymentStatus == PaymentStatus.Paid ? "#22c55e" : Model.Order.PaymentStatus == PaymentStatus.Failed ? "#ef4444" : "#f59e0b")">
+                                @Model.Order.PaymentStatus.ToString()
+                            </span>
+                        </div>
+                    }
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Order.Notes))
+                {
+                    <div class="notes-section">
+                        <p><strong>Your Notes:</strong> @Model.Order.Notes</p>
+                    </div>
+                }
+            </div>
+
+            <!-- Delivery Tracking (Left) + Vehicle Info (Right) -->
+            @if (Model.Order.Delivery != null)
+            {
+                <div class="delivery-vehicle-row">
+                    <!-- Delivery Tracking -->
+                    <div class="delivery-tracker">
+                        <div class="tracker-header">
+                            <h2 class="showcase-title">
+                                <i class="bi bi-truck"></i>
+                                Delivery Tracking
+                            </h2>
+                            <span class="@GetDeliveryStatusBadgeClass(Model.Order.Delivery.Status)">
+                                @Model.Order.Delivery.Status.ToString()
+                            </span>
+                        </div>
+
+                        <div class="delivery-timeline-modern">
+                            <div class="timeline-step @(Model.Order.Delivery.Status >= DeliveryStatus.Pending ? "completed" : "")">
+                                <div class="timeline-icon">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                </div>
+                                <div class="timeline-step-content">
+                                    <h6>Request Submitted</h6>
+                                    <p>@Model.Order.Delivery.CreatedAt.ToString("MMM dd, yyyy hh:mm tt")</p>
+                                    @if (Model.Order.Delivery.Status == DeliveryStatus.Pending)
+                                    {
+                                        <span class="badge bg-warning">Waiting for confirmation</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="timeline-step @(Model.Order.Delivery.Status >= DeliveryStatus.Scheduled ? "completed" : Model.Order.Delivery.Status == DeliveryStatus.Cancelled ? "cancelled" : "")">
+                                <div class="timeline-icon">
+                                    <i class="bi @(Model.Order.Delivery.Status >= DeliveryStatus.Scheduled ? "bi-check-circle-fill" : Model.Order.Delivery.Status == DeliveryStatus.Cancelled ? "bi-x-circle-fill" : "bi-circle")"></i>
+                                </div>
+                                <div class="timeline-step-content">
+                                    <h6>Confirmed & Scheduled</h6>
+                                    @if (Model.Order.Delivery.PlannedDate.HasValue)
+                                    {
+                                        <p>Planned: @Model.Order.Delivery.PlannedDate.Value.ToString("MMM dd, yyyy")</p>
+                                    }
+                                    else if (Model.Order.Delivery.Status == DeliveryStatus.Pending)
+                                    {
+                                        <p>Pending confirmation</p>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="timeline-step @(Model.Order.Delivery.Status >= DeliveryStatus.InTransit ? "completed" : Model.Order.Delivery.Status == DeliveryStatus.Cancelled ? "cancelled" : "")">
+                                <div class="timeline-icon">
+                                    <i class="bi @(Model.Order.Delivery.Status >= DeliveryStatus.InTransit ? "bi-check-circle-fill" : Model.Order.Delivery.Status == DeliveryStatus.Cancelled ? "bi-x-circle-fill" : "bi-circle")"></i>
+                                </div>
+                                <div class="timeline-step-content">
+                                    <h6>In Transit</h6>
+                                    @if (Model.Order.Delivery.Status == DeliveryStatus.InTransit)
+                                    {
+                                        <p style="color: #0070f3"><i class="bi bi-truck"></i> On the way!</p>
+                                    }
+                                    else if (Model.Order.Delivery.Status < DeliveryStatus.InTransit && Model.Order.Delivery.Status != DeliveryStatus.Cancelled)
+                                    {
+                                        <p>Not yet started</p>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="timeline-step @(Model.Order.Delivery.Status == DeliveryStatus.Delivered ? "completed" : Model.Order.Delivery.Status == DeliveryStatus.Cancelled ? "cancelled" : "")">
+                                <div class="timeline-icon">
+                                    <i class="bi @(Model.Order.Delivery.Status == DeliveryStatus.Delivered ? "bi-check-circle-fill" : Model.Order.Delivery.Status == DeliveryStatus.Cancelled ? "bi-x-circle-fill" : "bi-circle")"></i>
+                                </div>
+                                <div class="timeline-step-content">
+                                    <h6>@(Model.Order.Delivery.Status == DeliveryStatus.Cancelled ? "Cancelled" : "Delivered")</h6>
+                                    @if (Model.Order.Delivery.ActualDate.HasValue)
+                                    {
+                                        <p style="color: #22c55e"><i class="bi bi-check-circle"></i> Delivered on @Model.Order.Delivery.ActualDate.Value.ToString("MMM dd, yyyy")</p>
+                                    }
+                                    else if (Model.Order.Delivery.Status == DeliveryStatus.Cancelled)
+                                    {
+                                        <p style="color: #ef4444"><i class="bi bi-x-circle"></i> Cancelled</p>
+                                    }
+                                    else
+                                    {
+                                        <p>Awaiting delivery</p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.Order.Delivery.ShippingAddress) || !string.IsNullOrEmpty(Model.Order.Delivery.Notes) || !string.IsNullOrEmpty(Model.Order.Delivery.StaffNotes))
+                        {
+                            <div class="delivery-details">
+                                @if (!string.IsNullOrEmpty(Model.Order.Delivery.ShippingAddress))
+                                {
+                                    <div class="detail-row">
+                                        <i class="bi bi-pin-map-fill"></i>
+                                        <div class="detail-row-content">
+                                            <div class="detail-row-label">Delivery Address</div>
+                                            <div class="detail-row-value">@Model.Order.Delivery.ShippingAddress</div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(Model.Order.Delivery.Notes))
+                                {
+                                    <div class="detail-row">
+                                        <i class="bi bi-chat-left-text"></i>
+                                        <div class="detail-row-content">
+                                            <div class="detail-row-label">Your Notes</div>
+                                            <div class="detail-row-value">@Model.Order.Delivery.Notes</div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(Model.Order.Delivery.StaffNotes))
+                                {
+                                    <div class="detail-row">
+                                        <i class="bi bi-person-badge"></i>
+                                        <div class="detail-row-content">
+                                            <div class="detail-row-label">Staff Notes</div>
+                                            <div class="detail-row-value">@Model.Order.Delivery.StaffNotes</div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Vehicle Info -->
+                    <div class="vehicle-showcase">
+                        <h2 class="showcase-title">
+                            <i class="bi bi-car-front-fill"></i>
+                            Your Vehicle
+                        </h2>
+                        @foreach (var item in Model.Order.Items)
+                        {
+                            <div class="vehicle-showcase-item">
+                                <div class="vehicle-showcase-image">
+                                    <img src="@(string.IsNullOrEmpty(item.VehicleImageUrl) ? "/placeholder.svg" : item.VehicleImageUrl)"
+                                         alt="@item.VehicleModelName" />
+                                </div>
+                                <div class="vehicle-showcase-info">
+                                    <h3>@item.VehicleModelName @item.VehicleTrimName</h3>
+                                    <p class="year">@item.Year Model</p>
+                                    <p class="price">$@item.UnitPrice.ToString("N0")</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- Show vehicle showcase alone if no delivery yet -->
+                <div class="vehicle-showcase">
+                    <h2 class="showcase-title">
+                        <i class="bi bi-car-front-fill"></i>
+                        Your Vehicle
+                    </h2>
+                    @foreach (var item in Model.Order.Items)
+                    {
+                        <div class="vehicle-showcase-item">
+                            <div class="vehicle-showcase-image">
+                                <img src="@(string.IsNullOrEmpty(item.VehicleImageUrl) ? "/placeholder.svg" : item.VehicleImageUrl)"
+                                     alt="@item.VehicleModelName" />
+                            </div>
+                            <div class="vehicle-showcase-info">
+                                <h3>@item.VehicleModelName @item.VehicleTrimName</h3>
+                                <p class="year">@item.Year Model</p>
+                                <p class="price">$@item.UnitPrice.ToString("N0")</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            <!-- Payment Pending Alert -->
+            @if (Model.Order.Status == OrderStatus.Confirmed && Model.Order.PaymentStatus != PaymentStatus.Paid && !isStaff)
+            {
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    Payment pending. Please complete the payment to proceed with your order.
+                </div>
+                <div class="action-section">
+                    <a asp-page="/Order/Checkout" asp-route-orderId="@Model.Order.Id" class="btn btn-success">
+                        <i class="bi bi-credit-card"></i> Pay Now
+                    </a>
+                </div>
+            }
+
+            <!-- Action Buttons -->
+            <div class="action-section">
+                @if (Model.Order.Status == OrderStatus.Pending && Model.Order.PaymentStatus != PaymentStatus.Paid && !isStaff)
+                {
+                    <a asp-page="/Order/Checkout" asp-route-orderId="@Model.Order.Id" class="btn btn-success">
+                        <i class="bi bi-credit-card"></i> Pay Now
+                    </a>
+                    <button type="button" class="btn btn-danger" onclick="cancelOrder('@Model.Order.Id', '@Model.Order.OrderNumber')">
+                        <i class="bi bi-x-circle"></i> Cancel Order
+                    </button>
+                }
+
+                @if (Model.Order.PaymentStatus == PaymentStatus.Paid && Model.Order.Delivery == null && !isStaff)
+                {
+                    var hoursSinceConfirmation = Model.Order.UpdatedAt.HasValue 
+                        ? (DateTime.UtcNow - Model.Order.UpdatedAt.Value).TotalHours 
+                        : 0;
+                    var canRequestDelivery = hoursSinceConfirmation <= 24;
+                    
+                    if (canRequestDelivery)
+                    {
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#requestDeliveryModal">
+                            <i class="bi bi-truck"></i> Request Delivery
+                        </button>
+                    }
+                }
+
+                @if (Model.Order.Delivery != null && Model.Order.Delivery.Status == DeliveryStatus.Pending && !isStaff)
+                {
+                    <button type="button" class="btn btn-warning" onclick="cancelDelivery('@Model.Order.Delivery.Id')">
+                        <i class="bi bi-x-circle"></i> Cancel Delivery Request
+                    </button>
+                }
+
+                @if (Model.Order.Status == OrderStatus.Confirmed && !isStaff)
+                {
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#feedbackModal">
+                        <i class="bi bi-chat-left-text"></i> Give Feedback
+                    </button>
+                }
+            </div>
+
+            @if (Model.Order.PaymentStatus == PaymentStatus.Paid && Model.Order.Delivery == null && !isStaff)
+            {
+                var hoursSinceConfirmation = Model.Order.UpdatedAt.HasValue 
+                    ? (DateTime.UtcNow - Model.Order.UpdatedAt.Value).TotalHours 
+                    : 0;
+                var canRequestDelivery = hoursSinceConfirmation <= 24;
+                var hoursRemaining = canRequestDelivery ? (24 - hoursSinceConfirmation) : 0;
+                
+                if (canRequestDelivery)
+                {
+                    <div class="info-notice">
+                        <i class="bi bi-clock"></i>
+                        <p>
+                            You have <strong>@hoursRemaining.ToString("F1") hours</strong> remaining to request delivery
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> 
+                        The 24-hour window to request delivery has expired. Please contact support for assistance.
+                    </div>
+                }
+            }
+        }
+    </div>
+</div>
+
+@* Request Delivery Modal *@
+<div class="modal fade" id="requestDeliveryModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-truck"></i> Request Delivery
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="requestDeliveryForm">
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        Please provide your delivery address. Our staff will review and confirm your delivery request.
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="shippingAddress" class="form-label">
+                            <i class="bi bi-pin-map-fill"></i> Shipping Address <span class="text-danger">*</span>
+                        </label>
+                        <textarea id="shippingAddress" class="form-control" rows="3" required
+                                  placeholder="Enter your complete delivery address (Street, City, State, ZIP)"></textarea>
+                        <div class="form-text">
+                            Please provide a complete and accurate address for delivery
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="deliveryNotes" class="form-label">
+                            <i class="bi bi-chat-left-text"></i> Additional Notes (Optional)
+                        </label>
+                        <textarea id="deliveryNotes" class="form-control" rows="3"
+                                  placeholder="Any special instructions for delivery (e.g., gate code, preferred delivery time)"></textarea>
+                    </div>
+
+                    <div class="order-summary-box">
+                        <h6><i class="bi bi-box-seam"></i> Order Summary</h6>
+                        <div class="d-flex justify-content-between">
+                            <span>Order Number:</span>
+                            <strong>@Model.Order.OrderNumber</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Vehicle:</span>
+                            <strong>@string.Join(", ", Model.Order.Items.Select(i => $"{i.VehicleModelName} {i.VehicleTrimName}"))</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Total Amount:</span>
+                            <strong class="text-success">$@Model.Order.TotalAmount.ToString("N0")</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="submitDeliveryRequest">
+                        <i class="bi bi-send"></i> Submit Request
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@* Feedback Modal *@
+<div class="modal fade" id="feedbackModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-chat-left-text"></i> Give Feedback
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="feedbackForm">
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        Your feedback helps us improve our service. Please share your experience with your order, vehicle, and our service.
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="feedbackContent" class="form-label">
+                            <i class="bi bi-chat-left-dots"></i> Your Feedback <span class="text-danger">*</span>
+                        </label>
+                        <textarea id="feedbackContent" class="form-control" rows="5" required
+                                  placeholder="Tell us about your experience with the vehicle, our service, and overall satisfaction..."></textarea>
+                        <div class="form-text">
+                            Minimum 10 characters required
+                        </div>
+                    </div>
+
+                    <div class="order-summary-box">
+                        <h6><i class="bi bi-box-seam"></i> Order Information</h6>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Order Number:</span>
+                            <strong>@Model.Order.OrderNumber</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Vehicle:</span>
+                            <strong>@string.Join(", ", Model.Order.Items.Select(i => $"{i.VehicleModelName} {i.VehicleTrimName}"))</strong>
+                        </div>
+                        @if (Model.Order.Delivery?.ActualDate.HasValue == true)
+                        {
+                            <div class="d-flex justify-content-between">
+                                <span>Delivered On:</span>
+                                <strong>@Model.Order.Delivery.ActualDate.Value.ToString("MMM dd, yyyy")</strong>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="submitFeedback">
+                        <i class="bi bi-send"></i> Submit Feedback
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('requestDeliveryForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitDeliveryRequest');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting...';
+
+            const formData = {
+                orderId: '@Model.Order.Id',
+                shippingAddress: document.getElementById('shippingAddress').value,
+                notes: document.getElementById('deliveryNotes').value
+            };
+
+            try {
+                const response = await fetch('/Order/OrderDetail?handler=RequestDelivery', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('requestDeliveryModal'));
+                    modal.hide();
+                    alert('Delivery request submitted successfully! Our staff will review and confirm your request.');
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + (data.message || 'Failed to submit delivery request'));
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while submitting your request. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        });
+
+        document.getElementById('feedbackForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const content = document.getElementById('feedbackContent').value.trim();
+
+            if (content.length < 10) {
+                alert('Feedback must be at least 10 characters long');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitFeedback');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting...';
+
+            const formData = {
+                orderId: '@Model.Order.Id',
+                content: content
+            };
+
+            try {
+                const response = await fetch('/Order/OrderDetail?handler=SubmitFeedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('feedbackModal'));
+                    modal.hide();
+                    alert('Thank you for your feedback! We appreciate your input.');
+                    document.getElementById('feedbackContent').value = '';
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + (data.message || 'Failed to submit feedback'));
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while submitting your feedback. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        });
+
+        async function cancelDelivery(deliveryId) {
+            if (!confirm('Are you sure you want to cancel your delivery request?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/Order/OrderDetail?handler=CancelDelivery', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify({ deliveryId: deliveryId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Delivery request cancelled successfully');
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + (data.message || 'Failed to cancel delivery request'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+
+        function cancelOrder(orderId, orderNumber) {
+            if (confirm(`Are you sure you want to cancel Order #${orderNumber}?`)) {
+                const reason = prompt('Please provide a reason for cancellation (optional):');
+
+                if(reason === null) {
+                    return;
+                }
+                fetch(`/Order/OrderDetail?id=${orderId}&handler=Cancel`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify({ reason: reason })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Order cancelled successfully');
+                        window.location.href = '/Order/MyOrders';
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while cancelling the order');
+                });
+            }
+        }
+    </script>
+}

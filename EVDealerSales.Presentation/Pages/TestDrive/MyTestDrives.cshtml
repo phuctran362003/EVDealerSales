@@ -1,0 +1,683 @@
+@page
+@model EVDealerSales.Presentation.Pages.TestDrive.MyTestDrivesModel
+@{
+    ViewData["Title"] = "My Test Drives";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/testdrive.css" />
+    <style>
+        .my-testdrives-clean {
+            background: #000;
+            min-height: 100vh;
+            padding: 2rem 0;
+            position: static !important;
+            z-index: auto !important;
+        }
+
+        .modal-backdrop {
+            z-index: 1050 !important;
+        }
+
+        .modal {
+            z-index: 2000 !important;
+        }
+
+        .modal-dialog {
+            z-index: 2001 !important;
+        }
+
+
+        .my-testdrives-clean .page-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #1a1a1a;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .my-testdrives-clean .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0 0 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .my-testdrives-clean .page-title i {
+            color: #0070f3;
+        }
+
+        .my-testdrives-clean .page-subtitle {
+            font-size: 1rem;
+            color: #888;
+            margin: 0;
+        }
+
+        .my-testdrives-clean .btn-new-booking {
+            padding: 0.875rem 1.5rem;
+            background: linear-gradient(135deg, #0070f3 0%, #0060d3 100%);
+            border: none;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .my-testdrives-clean .btn-new-booking:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 112, 243, 0.4);
+            color: #fff;
+        }
+
+        .my-testdrives-clean .testdrive-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .my-testdrives-clean .testdrive-card {
+            background: linear-gradient(135deg, #0a0a0a 0%, #111 100%);
+            border: 1px solid #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .my-testdrives-clean .testdrive-card:hover {
+            border-color: #333;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 112, 243, 0.1);
+        }
+
+        .my-testdrives-clean .testdrive-card-content {
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            gap: 1.5rem;
+            padding: 1.25rem;
+            align-items: center;
+        }
+
+        .my-testdrives-clean .vehicle-thumbnail {
+            width: 100px;
+            height: 65px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .my-testdrives-clean .vehicle-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .my-testdrives-clean .vehicle-info {
+            flex: 1;
+        }
+
+        .my-testdrives-clean .vehicle-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #fff;
+            margin: 0 0 0.25rem 0;
+        }
+
+        .my-testdrives-clean .appointment-info {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.875rem;
+            color: #888;
+            margin-bottom: 0.5rem;
+        }
+
+        .my-testdrives-clean .appointment-info span {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .my-testdrives-clean .appointment-info i {
+            color: #0070f3;
+        }
+
+        .my-testdrives-clean .staff-info-prominent {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: rgba(0, 212, 170, 0.1);
+            border: 1px solid rgba(0, 212, 170, 0.3);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            color: #00d4aa;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            width: fit-content;
+        }
+
+        .my-testdrives-clean .staff-info-prominent i {
+            color: #00d4aa;
+            font-size: 1rem;
+        }
+
+        .my-testdrives-clean .status-section {
+            text-align: right;
+        }
+
+        .my-testdrives-clean .status-badge {
+            padding: 0.375rem 0.875rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .my-testdrives-clean .status-badge i {
+            font-size: 0.875rem;
+        }
+
+        .my-testdrives-clean .status-pending {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: #f59e0b;
+        }
+
+        .my-testdrives-clean .status-confirmed {
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            color: #3b82f6;
+        }
+
+        .my-testdrives-clean .status-completed {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            color: #22c55e;
+        }
+
+        .my-testdrives-clean .status-canceled {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #ef4444;
+        }
+
+        .my-testdrives-clean .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .my-testdrives-clean .card-actions .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .my-testdrives-clean .btn-view {
+            background: transparent;
+            border: 1px solid #0070f3;
+            color: #0070f3;
+        }
+
+        .my-testdrives-clean .btn-view:hover {
+            background: #0070f3;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .my-testdrives-clean .btn-cancel {
+            background: transparent;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+        }
+
+        .my-testdrives-clean .btn-cancel:hover {
+            background: #ef4444;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .my-testdrives-clean .notes-indicator {
+            font-size: 0.75rem;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .my-testdrives-clean .notes-indicator i {
+            color: #888;
+        }
+
+        .my-testdrives-clean .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, #0a0a0a 0%, #111 100%);
+            border: 1px solid #1a1a1a;
+            border-radius: 16px;
+        }
+
+        .my-testdrives-clean .empty-icon {
+            font-size: 4rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        .my-testdrives-clean .empty-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .my-testdrives-clean .empty-subtitle {
+            font-size: 1rem;
+            color: #888;
+            margin-bottom: 2rem;
+        }
+
+        .my-testdrives-clean .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #0a0a0a 0%, #111 100%);
+            border: 1px solid #1a1a1a;
+            border-radius: 12px;
+        }
+
+        .my-testdrives-clean .pagination-info {
+            color: #888;
+            font-size: 0.875rem;
+        }
+
+        .my-testdrives-clean .pagination-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .my-testdrives-clean .page-btn {
+            padding: 0.5rem 0.875rem;
+            background: #111;
+            border: 1px solid #1a1a1a;
+            color: #ccc;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .my-testdrives-clean .page-btn:hover {
+            background: #0070f3;
+            border-color: #0070f3;
+            color: #fff;
+        }
+
+        .my-testdrives-clean .page-btn.active {
+            background: #0070f3;
+            border-color: #0070f3;
+            color: #fff;
+        }
+
+        .modal-content-clean {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 16px;
+        }
+
+        .modal-header-clean {
+            padding: 1.5rem;
+            border-bottom: 1px solid #1a1a1a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header-clean h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-body-clean {
+            padding: 1.5rem;
+        }
+
+        .modal-footer-clean {
+            padding: 1.5rem;
+            border-top: 1px solid #1a1a1a;
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+
+        .form-control-clean {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: #111;
+            border: 1px solid #1a1a1a;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.95rem;
+        }
+
+        .form-control-clean:focus {
+            background: #1a1a1a;
+            border-color: #0070f3;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.1);
+        }
+
+        @@media (max-width: 992px) {
+            .my-testdrives-clean .testdrive-card-content {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .my-testdrives-clean .vehicle-thumbnail {
+                width: 100%;
+                height: 150px;
+            }
+
+            .my-testdrives-clean .status-section {
+                text-align: left;
+            }
+
+            .my-testdrives-clean .card-actions {
+                width: 100%;
+            }
+
+            .my-testdrives-clean .card-actions .btn {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .my-testdrives-clean .page-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .my-testdrives-clean .appointment-info {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+}
+
+<div class="my-testdrives-clean">
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">
+                    <i class="bi bi-calendar-check"></i>
+                    My Test Drives
+                </h1>
+                <p class="page-subtitle">
+                    View and manage your test drive appointments
+                </p>
+            </div>
+            <a asp-page="Register" class="btn-new-booking">
+                <i class="bi bi-plus-circle"></i>
+                Book New Test Drive
+            </a>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill"></i>
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (Model.TestDrives == null || !Model.TestDrives.Any())
+        {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-calendar-x"></i>
+                </div>
+                <h3 class="empty-title">No Test Drives Yet</h3>
+                <p class="empty-subtitle">
+                    You haven't registered for any test drives. Book your first test drive to experience our electric vehicles.
+                </p>
+                <a asp-page="Register" class="btn-new-booking btn-lg">
+                    <i class="bi bi-plus-circle"></i>
+                    Register Your First Test Drive
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="testdrive-grid">
+                @foreach (var testDrive in Model.TestDrives)
+                {
+                    <div class="testdrive-card">
+                        <div class="testdrive-card-content">
+                            <!-- Vehicle Thumbnail -->
+                            <div class="vehicle-thumbnail">
+                                <img src="@testDrive.VehicleImageUrl" alt="@testDrive.VehicleModelName" />
+                            </div>
+
+                            <!-- Vehicle Info & Appointment Details -->
+                            <div class="vehicle-info">
+                                <h3 class="vehicle-name">@testDrive.VehicleModelName @testDrive.VehicleTrimName</h3>
+                                <div class="appointment-info">
+                                    <span>
+                                        <i class="bi bi-calendar3"></i>
+                                        @testDrive.ScheduledAt.ToString("MMM dd, yyyy")
+                                    </span>
+                                    <span>
+                                        <i class="bi bi-clock"></i>
+                                        @testDrive.ScheduledAt.ToString("hh:mm tt")
+                                    </span>
+                                </div>
+                                @if (!string.IsNullOrEmpty(testDrive.Notes))
+                                {
+                                    <div class="notes-indicator">
+                                        <i class="bi bi-chat-left-text"></i>
+                                        Has notes
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(testDrive.StaffName))
+                                {
+                                    <div class="staff-info-prominent">
+                                        <i class="bi bi-person-badge-fill"></i>
+                                        Assigned to: @testDrive.StaffName
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Status Section -->
+                            <div class="status-section">
+                                @switch (testDrive.Status)
+                                {
+                                    case EVDealerSales.BusinessObject.Enums.TestDriveStatus.Pending:
+                                        <span class="status-badge status-pending">
+                                            <i class="bi bi-clock-fill"></i>
+                                            Pending
+                                        </span>
+                                        break;
+                                    case EVDealerSales.BusinessObject.Enums.TestDriveStatus.Confirmed:
+                                        <span class="status-badge status-confirmed">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            Confirmed
+                                        </span>
+                                        break;
+                                    case EVDealerSales.BusinessObject.Enums.TestDriveStatus.Completed:
+                                        <span class="status-badge status-completed">
+                                            <i class="bi bi-check-double"></i>
+                                            Completed
+                                        </span>
+                                        break;
+                                    case EVDealerSales.BusinessObject.Enums.TestDriveStatus.Canceled:
+                                        <span class="status-badge status-canceled">
+                                            <i class="bi bi-x-circle-fill"></i>
+                                            Canceled
+                                        </span>
+                                        break;
+                                }
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="card-actions">
+                                <a asp-page="Details" asp-route-id="@testDrive.Id" class="btn btn-view">
+                                    <i class="bi bi-eye"></i> Details
+                                </a>
+
+                                @if (testDrive.Status == EVDealerSales.BusinessObject.Enums.TestDriveStatus.Pending ||
+                                     testDrive.Status == EVDealerSales.BusinessObject.Enums.TestDriveStatus.Confirmed)
+                                {
+                                    <button type="button" class="btn btn-cancel"
+                                            data-bs-toggle="modal" data-bs-target="#cancelModal-@testDrive.Id">
+                                        <i class="bi bi-x-circle"></i> Cancel
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            @if (Model.TestDrives.TotalPages > 1)
+            {
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        Showing @((Model.PageNumber - 1) * Model.PageSize + 1) to
+                        @Math.Min(Model.PageNumber * Model.PageSize, Model.TestDrives.TotalCount) of
+                        @Model.TestDrives.TotalCount test drives
+                    </div>
+                    <div class="pagination-controls">
+                        @if (Model.TestDrives.HasPrevious)
+                        {
+                            <a class="page-btn" asp-page="MyTestDrives"
+                               asp-route-pageNumber="@(Model.PageNumber - 1)"
+                               asp-route-pageSize="@Model.PageSize">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        }
+
+                        @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.TestDrives.TotalPages, Model.PageNumber + 2); i++)
+                        {
+                            <a class="page-btn @(Model.PageNumber == i ? "active" : "")"
+                               asp-page="MyTestDrives"
+                               asp-route-pageNumber="@i"
+                               asp-route-pageSize="@Model.PageSize">
+                                @i
+                            </a>
+                        }
+
+                        @if (Model.TestDrives.HasNext)
+                        {
+                            <a class="page-btn" asp-page="MyTestDrives"
+                               asp-route-pageNumber="@(Model.PageNumber + 1)"
+                               asp-route-pageSize="@Model.PageSize">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<!-- Modals Section - Outside of Container -->
+@if (Model.TestDrives != null && Model.TestDrives.Any())
+{
+    @foreach (var testDrive in Model.TestDrives)
+    {
+        <div class="modal fade" id="cancelModal-@testDrive.Id" tabindex="-1" aria-labelledby="cancelModalLabel-@testDrive.Id" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content-clean">
+                    <form method="post" asp-page-handler="Cancel" asp-route-id="@testDrive.Id">
+                        @Html.AntiForgeryToken()
+                        <div class="modal-header-clean">
+                            <h3 style="color: #ef4444;">
+                                <i class="bi bi-x-circle"></i>
+                                Cancel Test Drive
+                            </h3>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body-clean">
+                            <div class="alert alert-warning mb-3">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                This action cannot be undone
+                            </div>
+                            <p style="margin-bottom: 1rem; color: #ccc;">
+                                Are you sure you want to cancel this test drive for <strong>@testDrive.VehicleModelName @testDrive.VehicleTrimName</strong>?
+                            </p>
+                            <p style="margin-bottom: 1.5rem; color: #888; font-size: 0.875rem;">
+                                Scheduled: @testDrive.ScheduledAt.ToString("MMMM dd, yyyy hh:mm tt")
+                            </p>
+                            <div class="mb-3">
+                                <label style="font-weight: 600; color: #fff; margin-bottom: 0.5rem; display: block;">
+                                    Cancellation Reason (Optional)
+                                </label>
+                                <textarea class="form-control-clean" name="reason" rows="3"
+                                          placeholder="Why are you canceling this test drive?"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer-clean">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Keep Booking
+                            </button>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-x-circle"></i> Yes, Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        setTimeout(function () {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+}

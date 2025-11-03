@@ -1,0 +1,200 @@
+﻿@page
+@model EVDealerSales.Presentation.Pages.Profile.IndexModel
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/staff-management.css" />
+}
+
+<div class="staff-page-clean">
+    <div class="container">
+        <!-- Header with Profile Card -->
+        <div class="staff-card-clean" style="margin-bottom: 1.5rem; overflow: visible;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2rem; border-radius: 12px 12px 0 0; position: relative; overflow: hidden;">
+                <!-- Pattern Overlay -->
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.1; background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,.1) 10px, rgba(255,255,255,.1) 20px);"></div>
+                
+                <div style="position: relative; z-index: 1; text-align: center;">
+                    @if (Model.UserProfile != null)
+                    {
+                        <div style="width: 100px; height: 100px; border-radius: 50%; background: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 700; color: #667eea; margin-bottom: 1rem; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);">
+                            @Model.UserProfile.FullName.Substring(0, 1).ToUpper()
+                        </div>
+                        <h1 style="font-size: 1.75rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem;">
+                            @Model.UserProfile.FullName
+                        </h1>
+                        <div style="display: inline-block; padding: 0.5rem 1rem; background: rgba(255, 255, 255, 0.2); border-radius: 20px; color: #fff; font-weight: 500; backdrop-filter: blur(10px);">
+                            <i class="bi bi-shield-check"></i>
+                            @Model.UserProfile.Role.ToString()
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill"></i>
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(ViewData.ModelState.Root?.ValidationState.ToString()) && !ModelState.IsValid)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                @Html.ValidationSummary(false, "", new { @class = "mb-0" })
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <!-- Main Content Grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+            <!-- Account Information -->
+            <div class="staff-card-clean">
+                <div class="staff-card-header-clean">
+                    <h3 class="staff-card-title-clean">
+                        <i class="bi bi-person-circle"></i>
+                        Account Information
+                    </h3>
+                </div>
+                <div class="staff-card-body-clean">
+                    @if (Model.UserProfile != null)
+                    {
+                        <div class="info-card-clean">
+                            <div class="info-item-clean">
+                                <div class="info-label-clean">
+                                    <i class="bi bi-envelope"></i> Email Address
+                                </div>
+                                <div class="info-value-clean">@Model.UserProfile.Email</div>
+                            </div>
+                            <div class="info-item-clean">
+                                <div class="info-label-clean">
+                                    <i class="bi bi-telephone"></i> Phone Number
+                                </div>
+                                <div class="info-value-clean">
+                                    @if (!string.IsNullOrEmpty(Model.UserProfile.PhoneNumber))
+                                    {
+                                        @Model.UserProfile.PhoneNumber
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #666; font-style: italic;">Not provided</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="info-item-clean">
+                                <div class="info-label-clean">
+                                    <i class="bi bi-shield-check"></i> Role
+                                </div>
+                                <div class="info-value-clean">
+                                    <span class="badge-clean badge-info">
+                                        @Model.UserProfile.Role.ToString()
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="info-item-clean">
+                                <div class="info-label-clean">
+                                    <i class="bi bi-calendar-plus"></i> Member Since
+                                </div>
+                                <div class="info-value-clean">@Model.UserProfile.CreatedAt.ToString("MMMM dd, yyyy")</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Update Profile Form -->
+            <div class="staff-card-clean">
+                <div class="staff-card-header-clean">
+                    <h3 class="staff-card-title-clean">
+                        <i class="bi bi-pencil-square"></i>
+                        Update Profile
+                    </h3>
+                </div>
+                <div class="staff-card-body-clean">
+                    <form method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="filter-group-clean">
+                            <label class="filter-label-clean" asp-for="UpdateProfileRequest.FullName">
+                                <i class="bi bi-person"></i>
+                                Full Name <span style="color: #ef4444;">*</span>
+                            </label>
+                            <input type="text" class="filter-input-clean" asp-for="UpdateProfileRequest.FullName" required>
+                            <span asp-validation-for="UpdateProfileRequest.FullName" class="text-danger" style="font-size: 0.8rem;"></span>
+                        </div>
+
+                        <div class="filter-group-clean">
+                            <label class="filter-label-clean" asp-for="UpdateProfileRequest.PhoneNumber">
+                                <i class="bi bi-telephone"></i>
+                                Phone Number <span style="color: #ef4444;">*</span>
+                            </label>
+                            <input type="tel" class="filter-input-clean" asp-for="UpdateProfileRequest.PhoneNumber" required>
+                            <span asp-validation-for="UpdateProfileRequest.PhoneNumber" class="text-danger" style="font-size: 0.8rem;"></span>
+                        </div>
+
+                        <!-- Password Section -->
+                        <div style="border-top: 1px solid #1a1a1a; margin: 1.5rem 0; padding-top: 1.5rem;">
+                            <h6 style="color: #888; margin-bottom: 1rem; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="bi bi-key"></i> Change Password (Optional)
+                            </h6>
+
+                            <div class="filter-group-clean">
+                                <label class="filter-label-clean" asp-for="UpdateProfileRequest.CurrentPassword">
+                                    <i class="bi bi-lock"></i>
+                                    Current Password
+                                </label>
+                                <input type="password" class="filter-input-clean" asp-for="UpdateProfileRequest.CurrentPassword"
+                                       placeholder="Enter current password if changing">
+                                <span asp-validation-for="UpdateProfileRequest.CurrentPassword" class="text-danger" style="font-size: 0.8rem;"></span>
+                            </div>
+
+                            <div class="filter-group-clean">
+                                <label class="filter-label-clean" asp-for="UpdateProfileRequest.NewPassword">
+                                    <i class="bi bi-key-fill"></i>
+                                    New Password
+                                </label>
+                                <input type="password" class="filter-input-clean" asp-for="UpdateProfileRequest.NewPassword"
+                                       placeholder="Enter new password (min 6 characters)">
+                                <span asp-validation-for="UpdateProfileRequest.NewPassword" class="text-danger" style="font-size: 0.8rem;"></span>
+                                <small style="color: #888; display: block; margin-top: 0.5rem; font-size: 0.75rem;">
+                                    <i class="bi bi-info-circle"></i> Leave blank to keep current password
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div style="display: flex; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid #1a1a1a;">
+                            <button type="submit" class="btn-clean btn-primary-clean" style="flex: 1;">
+                                <i class="bi bi-save"></i> Update Profile
+                            </button>
+                            <a asp-page="/Index" class="btn-clean btn-secondary-clean">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Auto-hide alerts
+        setTimeout(function () {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 300);
+            });
+        }, 5000);
+    </script>
+}

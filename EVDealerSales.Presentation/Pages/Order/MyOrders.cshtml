@@ -1,0 +1,574 @@
+@page
+@using EVDealerSales.BusinessObject.DTOs.OrderDTOs
+@using EVDealerSales.BusinessObject.Enums
+@model EVDealerSales.Presentation.Pages.Order.MyOrdersModel
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/order.css" />
+    <style>
+        .my-orders-clean {
+            background: #000;
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .my-orders-clean .orders-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .my-orders-clean .orders-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .my-orders-clean .orders-title i {
+            color: #0070f3;
+        }
+
+        .my-orders-clean .orders-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .my-orders-clean .order-card-compact {
+            background: linear-gradient(135deg, #0a0a0a 0%, #111 100%);
+            border: 1px solid #1a1a1a;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .my-orders-clean .order-card-compact:hover {
+            border-color: #333;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 112, 243, 0.15);
+        }
+
+        .my-orders-clean .order-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            background: #0a0a0a;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .my-orders-clean .order-header-info {
+            flex: 1;
+        }
+
+        .my-orders-clean .order-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0 0 0.25rem 0;
+        }
+
+        .my-orders-clean .order-date {
+            font-size: 0.875rem;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .my-orders-clean .order-date i {
+            color: #0070f3;
+        }
+
+        .my-orders-clean .order-status-badge {
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .my-orders-clean .order-status-badge i {
+            font-size: 1rem;
+        }
+
+        .my-orders-clean .status-pending {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: #f59e0b;
+        }
+
+        .my-orders-clean .status-confirmed {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            color: #22c55e;
+        }
+
+        .my-orders-clean .status-cancelled {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #ef4444;
+        }
+
+        .my-orders-clean .order-content {
+            display: grid;
+            grid-template-columns: 200px 1fr auto;
+            gap: 2rem;
+            padding: 1.5rem;
+            align-items: center;
+        }
+
+        .my-orders-clean .vehicle-thumb {
+            width: 200px;
+            height: 130px;
+            border-radius: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .my-orders-clean .vehicle-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .my-orders-clean .vehicle-details {
+            flex: 1;
+        }
+
+        .my-orders-clean .vehicle-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #fff;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .my-orders-clean .vehicle-year {
+            font-size: 0.875rem;
+            color: #888;
+            margin: 0 0 1rem 0;
+        }
+
+        .my-orders-clean .order-meta {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .my-orders-clean .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .my-orders-clean .meta-label {
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .my-orders-clean .meta-value {
+            font-size: 0.875rem;
+            color: #ccc;
+        }
+
+        .my-orders-clean .order-price-section {
+            text-align: right;
+            padding-right: 1rem;
+        }
+
+        .my-orders-clean .price-label {
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .my-orders-clean .total-price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f4f4f5;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .my-orders-clean .payment-status {
+            padding: 0.375rem 0.875rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .my-orders-clean .payment-paid {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+
+        .my-orders-clean .payment-pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+
+        .my-orders-clean .payment-failed {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .my-orders-clean .order-actions {
+            display: flex;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            background: #0a0a0a;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        .my-orders-clean .order-actions .btn {
+            padding: 0.625rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .my-orders-clean .order-actions .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .my-orders-clean .btn-outline-primary {
+            background: transparent;
+            border: 1px solid #0070f3;
+            color: #0070f3;
+        }
+
+        .my-orders-clean .btn-outline-primary:hover {
+            background: #0070f3;
+            color: #fff;
+        }
+
+        .my-orders-clean .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, #0a0a0a 0%, #111 100%);
+            border: 1px solid #1a1a1a;
+            border-radius: 16px;
+        }
+
+        .my-orders-clean .empty-icon {
+            font-size: 4rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        .my-orders-clean .empty-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .my-orders-clean .empty-subtitle {
+            font-size: 1rem;
+            color: #888;
+            margin-bottom: 2rem;
+        }
+
+        .my-orders-clean .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #0a0a0a 0%, #111 100%);
+            border: 1px solid #1a1a1a;
+            border-radius: 12px;
+        }
+
+        .my-orders-clean .pagination-info {
+            color: #888;
+            font-size: 0.875rem;
+        }
+
+        .my-orders-clean .pagination-controls {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .my-orders-clean .page-btn {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #0070f3 0%, #0060d3 100%);
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .my-orders-clean .page-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 112, 243, 0.4);
+            color: white;
+        }
+
+        @@media (max-width: 992px) {
+            .my-orders-clean .order-content {
+                grid-template-columns: 1fr;
+            }
+
+            .my-orders-clean .vehicle-thumb {
+                width: 100%;
+                height: 200px;
+            }
+
+            .my-orders-clean .order-price-section {
+                text-align: left;
+                padding-right: 0;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .my-orders-clean .order-card-top {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .my-orders-clean .order-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .my-orders-clean .order-actions {
+                flex-wrap: wrap;
+            }
+
+            .my-orders-clean .order-actions .btn {
+                flex: 1 1 calc(50% - 0.375rem);
+                justify-content: center;
+            }
+        }
+    </style>
+}
+
+<div class="my-orders-clean">
+    <div class="container">
+        <div class="orders-header">
+            <h1 class="orders-title">
+                <i class="bi bi-bag-check-fill"></i>
+                My Orders
+            </h1>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill"></i>
+                @Model.SuccessMessage
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                @Model.ErrorMessage
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (Model.Orders.TotalCount == 0)
+        {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-cart-x"></i>
+                </div>
+                <h3 class="empty-title">No orders yet</h3>
+                <p class="empty-subtitle">Start shopping for your dream electric vehicle</p>
+                <a asp-page="/Vehicle/BrowseVehicles" class="btn btn-primary btn-lg">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                    Browse Vehicles
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="orders-grid">
+                @foreach (var order in Model.Orders)
+                {
+                    <div class="order-card-compact">
+                        <!-- Order Header -->
+                        <div class="order-card-top">
+                            <div class="order-header-info">
+                                <h3 class="order-number">#@order.OrderNumber</h3>
+                                <p class="order-date">
+                                    <i class="bi bi-calendar3"></i>
+                                    @order.CreatedAt.ToString("MMM dd, yyyy")
+                                </p>
+                            </div>
+                            <div>
+                                @switch (order.Status)
+                                {
+                                    case OrderStatus.Pending:
+                                        <span class="order-status-badge status-pending">
+                                            <i class="bi bi-clock-fill"></i>
+                                            Pending
+                                        </span>
+                                        break;
+                                    case OrderStatus.Confirmed:
+                                        <span class="order-status-badge status-confirmed">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            Confirmed
+                                        </span>
+                                        break;
+                                    case OrderStatus.Cancelled:
+                                        <span class="order-status-badge status-cancelled">
+                                            <i class="bi bi-x-circle-fill"></i>
+                                            Cancelled
+                                        </span>
+                                        break;
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Order Content -->
+                        <div class="order-content">
+                            <!-- Vehicle Image -->
+                            @foreach (var item in order.Items)
+                            {
+                                <div class="vehicle-thumb">
+                                    <img src="@(string.IsNullOrEmpty(item.VehicleImageUrl) ? "/placeholder.svg" : item.VehicleImageUrl)"
+                                         alt="@item.VehicleModelName" />
+                                </div>
+                            }
+
+                            <!-- Vehicle Details -->
+                            <div class="vehicle-details">
+                                @foreach (var item in order.Items)
+                                {
+                                    <h4 class="vehicle-name">@item.VehicleModelName @item.VehicleTrimName</h4>
+                                    <p class="vehicle-year">@item.Year Model</p>
+                                }
+
+                                <div class="order-meta">
+                                    @if (order.PaymentStatus.HasValue)
+                                    {
+                                        <div class="meta-item">
+                                            <span class="meta-label">Payment</span>
+                                            <span class="payment-status @(order.PaymentStatus == PaymentStatus.Paid ? "payment-paid" : order.PaymentStatus == PaymentStatus.Failed ? "payment-failed" : "payment-pending")">
+                                                @order.PaymentStatus.ToString()
+                                            </span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Price Section -->
+                            <div class="order-price-section">
+                                <div class="price-label">Total Amount</div>
+                                <div class="total-price">$@order.TotalAmount.ToString("N0")</div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="order-actions">
+                            <a asp-page="/Order/OrderDetail" asp-route-id="@order.Id" class="btn btn-outline-primary">
+                                <i class="bi bi-eye"></i>
+                                View Details
+                            </a>
+
+                            @if (order.Status == OrderStatus.Pending && order.PaymentStatus != PaymentStatus.Paid)
+                            {
+                                <a asp-page="/Order/Checkout" asp-route-orderId="@order.Id" class="btn btn-success">
+                                    <i class="bi bi-credit-card"></i>
+                                    Pay Now
+                                </a>
+                                <button type="button" class="btn btn-danger" onclick="cancelOrder('@order.Id', '@order.OrderNumber')">
+                                    <i class="bi bi-x-circle"></i>
+                                    Cancel
+                                </button>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+            @if (Model.Orders.TotalPages > 1)
+            {
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        Showing @((Model.Orders.CurrentPage - 1) * Model.Orders.PageSize + 1)-@Math.Min(Model.Orders.CurrentPage * Model.Orders.PageSize, Model.Orders.TotalCount) of @Model.Orders.TotalCount orders
+                    </div>
+                    <div class="pagination-controls">
+                        @if (Model.Orders.HasPrevious)
+                        {
+                            <a class="page-btn" asp-page="./MyOrders" asp-route-PageNumber="@(Model.Orders.CurrentPage - 1)" asp-route-PageSize="@Model.Orders.PageSize">
+                                <i class="bi bi-chevron-left"></i> Previous
+                            </a>
+                        }
+                        @if (Model.Orders.HasNext)
+                        {
+                            <a class="page-btn" asp-page="./MyOrders" asp-route-PageNumber="@(Model.Orders.CurrentPage + 1)" asp-route-PageSize="@Model.Orders.PageSize">
+                                Next <i class="bi bi-chevron-right"></i>
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function cancelOrder(orderId, orderNumber) {
+            if (confirm(`Are you sure you want to cancel Order #${orderNumber}?`)) {
+                const reason = prompt('Please provide a reason for cancellation (optional):');
+
+                if (reason === null) {
+                    return;
+                }
+                fetch(`/Order/OrderDetail?id=${orderId}&handler=Cancel`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify({ reason: reason })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Order cancelled successfully');
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while cancelling the order');
+                });
+            }
+        }
+    </script>
+}

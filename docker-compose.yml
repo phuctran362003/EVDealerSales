@@ -1,0 +1,35 @@
+services:
+  evdealersales.presentation:
+    build:
+      context: .
+      dockerfile: EVDealerSales.Presentation/Dockerfile
+    image: evdealersales-presentation:latest
+    depends_on:
+      - evdealersales.database
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ConnectionStrings__DefaultConnection=Server=evdealersales.database,1433;Database=EVDealerSalesDb;User Id=sa;Password=StrongPassw0rd123;TrustServerCertificate=True;Encrypt=False;MultipleActiveResultSets=True"
+      - "JWT__SecretKey=EVDealerSales_SECRETKEY_SIEUCAPBAOMAT_VAYMACHUADU16KYTU"
+      - "JWT__Issuer=EVDealerSales_Issuer"
+      - "JWT__Audience=EVDealerSales_Audience"
+      - GEMINI_API_KEY=AIzaSyDvLWsOUM4Vb-TyH2FaS8kEFGWc53guJpc
+      - AppSettings__BaseUrl=http://localhost:5000
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data/keys:/keys
+
+  evdealersales.database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: evdealersales-sqlserver
+    ports:
+      - "11433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=StrongPassw0rd123
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+
+volumes:
+  sqlserver-data:
+   driver: local

@@ -1,0 +1,204 @@
+﻿@page "{id:guid}"
+@model EVDealerSales.Presentation.Pages.Vehicle.DetailVehiclesModel
+@{
+    ViewData["Title"] = $"{Model.Vehicle?.ModelName} {Model.Vehicle?.TrimName}" ?? "Vehicle Details";
+    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+    var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+}
+
+@section Styles {
+    <head>
+        <link rel="stylesheet" href="~/css/vehicle.css" />
+    </head>
+}
+
+<div class="vehicle-detail-container">
+    <div class="detail-back-nav">
+        <a asp-page="/Vehicle/BrowseVehicles" class="back-link">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back to Browse</span>
+        </a>
+    </div>
+
+    <div class="detail-hero">
+        <div class="detail-image-wrapper">
+            <img src="@Model.Vehicle.ImageUrl" alt="@Model.Vehicle.ModelName @Model.Vehicle.TrimName" class="detail-vehicle-image" />
+            @if (!Model.Vehicle.IsActive)
+            {
+                <div class="detail-inactive-badge">
+                    <i class="fas fa-ban"></i>
+                    <span>Currently Unavailable</span>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="detail-content">
+        <div class="detail-header">
+            <div class="detail-title-section">
+                <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                    <h1 class="detail-model-name">@Model.Vehicle.ModelName</h1>
+                    <div style="display: inline-flex; flex-direction: column; align-items: flex-start; padding: 0.75rem 1rem; background: @(Model.Vehicle.Stock <= 0 ? "rgba(239, 68, 68, 0.1)" : Model.Vehicle.Stock <= 5 ? "rgba(255, 165, 0, 0.1)" : "rgba(0, 212, 170, 0.1)"); border: 2px solid @(Model.Vehicle.Stock <= 0 ? "#ef4444" : Model.Vehicle.Stock <= 5 ? "#ffa500" : "#00d4aa"); border-radius: 8px;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 1.25rem; font-weight: 700; color: @(Model.Vehicle.Stock <= 0 ? "#ef4444" : Model.Vehicle.Stock <= 5 ? "#ffa500" : "#00d4aa");">
+                            <i class="bi bi-box-seam"></i>
+                            <span>@Model.Vehicle.Stock Units</span>
+                        </div>
+                        <div style="font-size: 0.875rem; font-weight: 600; color: @(Model.Vehicle.Stock <= 0 ? "#ef4444" : Model.Vehicle.Stock <= 5 ? "#ffa500" : "#00d4aa"); margin-top: 0.25rem;">
+                            @(Model.Vehicle.Stock <= 0 ? "Out of Stock" : Model.Vehicle.Stock <= 5 ? "Low Stock" : "In Stock")
+                        </div>
+                    </div>
+                </div>
+                <p class="detail-trim-year">
+                    @Model.Vehicle.TrimName @if(Model.Vehicle.ModelYear.HasValue) {
+                    <span>• @Model.Vehicle.ModelYear</span>
+                                        }
+                </p>
+            </div>
+            <div class="detail-price-section">
+                <p class="detail-price-label">Starting at</p>
+                <p class="detail-price">$@Model.Vehicle.BasePrice.ToString("N0")</p>
+            </div>
+        </div>
+
+        <div class="detail-specs-section">
+            <h2 class="detail-section-title">
+                <i class="fas fa-bolt"></i>
+                Electric Performance
+            </h2>
+            <div class="detail-specs-grid">
+                <div class="detail-spec-card">
+                    <div class="spec-icon">
+                        <i class="fas fa-battery-full"></i>
+                    </div>
+                    <div class="spec-content">
+                        <p class="spec-label">Battery Capacity</p>
+                        <p class="spec-value">@Model.Vehicle.BatteryCapacity kWh</p>
+                    </div>
+                </div>
+
+                <div class="detail-spec-card">
+                    <div class="spec-icon">
+                        <i class="fas fa-road"></i>
+                    </div>
+                    <div class="spec-content">
+                        <p class="spec-label">Range</p>
+                        <p class="spec-value">@Model.Vehicle.RangeKM km</p>
+                    </div>
+                </div>
+
+                <div class="detail-spec-card">
+                    <div class="spec-icon">
+                        <i class="fas fa-charging-station"></i>
+                    </div>
+                    <div class="spec-content">
+                        <p class="spec-label">Charging Time</p>
+                        <p class="spec-value">@Model.Vehicle.ChargingTime hrs</p>
+                    </div>
+                </div>
+
+                <div class="detail-spec-card">
+                    <div class="spec-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <div class="spec-content">
+                        <p class="spec-label">Top Speed</p>
+                        <p class="spec-value">@Model.Vehicle.TopSpeed km/h</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-cta-section">
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                @if (isAuthenticated && userRole == "Customer")
+                {
+                    @if (Model.Vehicle.Stock > 0)
+                    {
+                        <a asp-page="/Order/CreateOrder" asp-route-vehicleId="@Model.Vehicle.Id" class="detail-appointment-btn" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%); flex: 1;">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Buy Now</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <button class="detail-appointment-btn" disabled style="background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%); opacity: 0.6; cursor: not-allowed; flex: 1;">
+                            <i class="fas fa-times-circle"></i>
+                            <span>Out of Stock</span>
+                        </button>
+                    }
+                    <a asp-page="/TestDrive/Register" asp-route-vehicleId="@Model.Vehicle.Id" class="detail-appointment-btn" style="flex: 1;">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Test Drive</span>
+                    </a>
+                }
+                else if (!isAuthenticated)
+                {
+                    @if (Model.Vehicle.Stock > 0)
+                    {
+                        <a asp-page="/Auth/Login" asp-route-returnUrl="@($"/Vehicle/DetailVehicles/{Model.Vehicle.Id}")" class="detail-appointment-btn" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%); flex: 1;">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Login to Buy</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <button class="detail-appointment-btn" disabled style="background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%); opacity: 0.6; cursor: not-allowed; flex: 1;">
+                            <i class="fas fa-times-circle"></i>
+                            <span>Out of Stock</span>
+                        </button>
+                    }
+                    <a asp-page="/Auth/Login" asp-route-returnUrl="@($"/TestDrive/Register?vehicleId={Model.Vehicle.Id}")" class="detail-appointment-btn" style="flex: 1;">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Login to Test Drive</span>
+                    </a>
+                }
+                else
+                {
+                    <button class="detail-appointment-btn" disabled style="opacity: 0.5; cursor: not-allowed; flex: 1;">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Only Customers Can Purchase</span>
+                    </button>
+                }
+            </div>
+            <p class="detail-cta-note">
+                @if (Model.Vehicle.Stock == 0)
+                {
+                    <span style="color: #e74c3c; font-weight: 500;">
+                        <i class="fas fa-exclamation-triangle"></i> This vehicle is currently out of stock. Test drives may still be available.
+                    </span>
+                }
+                else if (!isAuthenticated)
+                {
+                    <span>Please <a asp-page="/Auth/Login" asp-route-returnUrl="@($"/Vehicle/DetailVehicles/{Model.Vehicle.Id}")" style="color: #0070f3; text-decoration: underline;">login</a> or <a asp-page="/Auth/Register" asp-route-returnUrl="@($"/Vehicle/DetailVehicles/{Model.Vehicle.Id}")" style="color: #0070f3; text-decoration: underline;">register</a> to purchase or test drive this vehicle</span>
+                }
+                else if (userRole == "Customer")
+                {
+                    <span>Purchase this vehicle or schedule a test drive to experience it first. <strong>@Model.Vehicle.Stock</strong> unit@(Model.Vehicle.Stock != 1 ? "s" : "") in stock.</span>
+                }
+                else
+                {
+                    <span>Only customer accounts can purchase vehicles or book test drives</span>
+                }
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Add smooth scroll behavior
+        document.addEventListener('DOMContentLoaded', function() {
+            const detailContent = document.querySelector('.detail-content');
+            if (detailContent) {
+                detailContent.style.opacity = '0';
+                detailContent.style.transform = 'translateY(20px)';
+
+                setTimeout(() => {
+                    detailContent.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    detailContent.style.opacity = '1';
+                    detailContent.style.transform = 'translateY(0)';
+                }, 100);
+            }
+        });
+    </script>
+}

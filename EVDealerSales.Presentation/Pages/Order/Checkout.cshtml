@@ -1,0 +1,238 @@
+@page
+@model EVDealerSales.Presentation.Pages.Order.CheckoutModel
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/order.css" />
+    <style>
+        #payment-element {
+            margin-bottom: 24px;
+        }
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @@keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+}
+
+<div class="checkout-container">
+    <div class="container">
+        <div class="checkout-header">
+            <a asp-page="/Order/OrderDetail" asp-route-id="@Model.Order.Id" class="btn-back">
+                <i class="bi bi-arrow-left"></i> Back to Order
+            </a>
+            <h1><i class="bi bi-credit-card"></i> Checkout</h1>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                @Model.ErrorMessage
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <div class="row">
+            <!-- Order Summary -->
+            <div class="col-lg-5">
+                <div class="detail-card">
+                    <div class="card-header">
+                        <h2><i class="bi bi-receipt"></i> Order Summary</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="order-summary-item">
+                            <label>Order Number:</label>
+                            <span>#@Model.Order.OrderNumber</span>
+                        </div>
+                        
+                        @foreach (var item in Model.Order.Items)
+                        {
+                            <div class="checkout-vehicle-item">
+                                <div class="vehicle-thumbnail">
+                                    <img src="@(string.IsNullOrEmpty(item.VehicleImageUrl) ? "/placeholder.svg" : item.VehicleImageUrl)" 
+                                         alt="@item.VehicleModelName" />
+                                </div>
+                                <div class="vehicle-details">
+                                    <h4>@item.VehicleModelName @item.VehicleTrimName</h4>
+                                    <p>@item.Year Model</p>
+                                </div>
+                                <div class="vehicle-price">
+                                    $@item.UnitPrice.ToString("N0")
+                                </div>
+                            </div>
+                        }
+
+                        <div class="alert alert-info mt-3">
+                            <i class="bi bi-info-circle"></i>
+                            You can request delivery and specify shipping address after completing the payment.
+                        </div>
+
+                        <div class="total-amount">
+                            <label>Total Amount:</label>
+                            <span class="amount">$@Model.Order.TotalAmount.ToString("N0")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Form -->
+            <div class="col-lg-7">
+                <div class="detail-card">
+                    <div class="card-header">
+                        <h2><i class="bi bi-lock-fill"></i> Payment Information</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="payment-form">
+                            <div id="payment-element">
+                                <!-- Stripe Payment Element will be inserted here -->
+                            </div>
+                            
+                            <div id="payment-message" class="alert d-none" role="alert"></div>
+                            
+                            <button id="submit-button" type="submit" class="btn btn-success btn-lg w-100">
+                                <span id="button-text">
+                                    <i class="bi bi-shield-check"></i>
+                                    Pay $@Model.Order.TotalAmount.ToString("N0")
+                                </span>
+                                <span id="button-spinner" class="spinner d-none"></span>
+                            </button>
+                        </form>
+
+                        <div class="payment-security mt-3">
+                            <p class="text-muted text-center">
+                                <i class="bi bi-shield-fill-check"></i>
+                                Your payment information is secure and encrypted
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const stripe = Stripe('@Model.StripePublishableKey');
+        const options = {
+            clientSecret: '@Model.ClientSecret',
+            appearance: {
+                theme: 'stripe',
+                variables: {
+                    colorPrimary: '#0066cc',
+                }
+            }
+        };
+
+        const elements = stripe.elements(options);
+        const paymentElement = elements.create('payment');
+        paymentElement.mount('#payment-element');
+
+        const form = document.getElementById('payment-form');
+        const submitButton = document.getElementById('submit-button');
+        const buttonText = document.getElementById('button-text');
+        const buttonSpinner = document.getElementById('button-spinner');
+        const messageContainer = document.getElementById('payment-message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            setLoading(true);
+            
+            const { error } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: window.location.origin + '/Order/PaymentSuccess?orderId=@Model.Order.Id',
+                }
+            });
+
+            if (error) {
+                showMessage(error.message, 'danger');
+                setLoading(false);
+            }
+        });
+
+        function setLoading(loading) {
+            submitButton.disabled = loading;
+            buttonText.classList.toggle('d-none', loading);
+            buttonSpinner.classList.toggle('d-none', !loading);
+        }
+
+        function showMessage(message, type = 'info') {
+            messageContainer.textContent = message;
+            messageContainer.className = `alert alert-${type}`;
+            messageContainer.classList.remove('d-none');
+            
+            setTimeout(() => {
+                messageContainer.classList.add('d-none');
+            }, 5000);
+        }
+
+        // Check payment status on page load (for returning customers)
+        checkStatus();
+
+        async function checkStatus() {
+            const clientSecret = new URLSearchParams(window.location.search).get(
+                'payment_intent_client_secret'
+            );
+
+            if (!clientSecret) {
+                return;
+            }
+
+            const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
+
+            switch (paymentIntent.status) {
+                case 'succeeded':
+                    showMessage('Payment succeeded! Confirming your order...', 'success');
+                    // Call backend to confirm payment
+                    await confirmPaymentOnServer(paymentIntent.id);
+                    break;
+                case 'processing':
+                    showMessage('Your payment is processing.', 'info');
+                    break;
+                case 'requires_payment_method':
+                    showMessage('Your payment was not successful, please try again.', 'danger');
+                    break;
+                default:
+                    showMessage('Something went wrong.', 'danger');
+                    break;
+            }
+        }
+
+        async function confirmPaymentOnServer(paymentIntentId) {
+            try {
+                const response = await fetch('/Order/ConfirmPayment?handler=Confirm', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify({ paymentIntentId: paymentIntentId })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    window.location.href = '/Order/PaymentSuccess?orderId=@Model.Order.Id';
+                } else {
+                    showMessage('Error confirming payment: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('An error occurred while confirming payment', 'danger');
+            }
+        }
+    </script>
+}

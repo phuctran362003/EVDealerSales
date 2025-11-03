@@ -1,0 +1,262 @@
+﻿/* ===================================
+   ORDERS & DELIVERIES MANAGEMENT CSS
+   =================================== */
+
+/* Table Improvements */
+.table {
+    color: #e0e0e0 !important; /* Chữ sáng hơn trên nền tối */
+}
+
+    .table thead th {
+        background-color: #1a1a1a;
+        color: #ffffff !important;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #333;
+        padding: 1rem 0.75rem;
+        vertical-align: middle;
+    }
+
+    .table tbody td {
+        color: #d0d0d0 !important; /* Chữ trong body sáng hơn */
+        font-size: 0.9rem;
+        padding: 1rem 0.75rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #2a2a2a;
+    }
+
+    .table tbody tr:hover {
+        background-color: #1e1e1e !important;
+    }
+
+    /* Customer Info - Làm rõ hơn */
+    .table tbody td div[style*="font-weight: 500"] {
+        color: #ffffff !important;
+        font-weight: 600 !important;
+    }
+
+    .table tbody td div[style*="color: #888"] {
+        color: #b0b0b0 !important; /* Email sáng hơn */
+    }
+
+    .table tbody td div[style*="color: #666"] {
+        color: #999 !important; /* Phone sáng hơn */
+    }
+
+    /* Order Number */
+    .table tbody td strong {
+        color: #ffffff !important;
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
+
+        /* Total Amount */
+        .table tbody td strong[style*="color: #28a745"] {
+            color: #4caf50 !important;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+    /* Date Column */
+    .table tbody td div[style*="font-weight: 500"]:has(+ div[style*="color: #888"]) {
+        color: #ffffff !important;
+    }
+
+/* Badges - Làm rõ ràng hơn */
+.badge {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+    .badge i {
+        font-size: 0.9rem;
+    }
+
+/* Badge Colors - Sáng hơn */
+.badge-warning {
+    background-color: #ff9800 !important;
+    color: #000 !important;
+}
+
+.badge-success {
+    background-color: #4caf50 !important;
+    color: #fff !important;
+}
+
+.badge-info {
+    background-color: #2196f3 !important;
+    color: #fff !important;
+}
+
+.badge-danger {
+    background-color: #f44336 !important;
+    color: #fff !important;
+}
+
+.badge[style*="background-color: #ffc107"] {
+    background-color: #ffb300 !important;
+    color: #000 !important;
+}
+
+.badge[style*="background-color: #28a745"] {
+    background-color: #4caf50 !important;
+}
+
+.badge[style*="background-color: #dc3545"] {
+    background-color: #f44336 !important;
+}
+
+.badge[style*="background-color: #6c757d"] {
+    background-color: #757575 !important;
+    color: #fff !important;
+}
+
+/* Actions Column - Căn chỉnh các nút */
+.table tbody td:last-child {
+    padding: 0.75rem !important;
+}
+
+.table tbody td .d-flex {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.5rem !important;
+    flex-wrap: nowrap !important;
+}
+
+/* Button Improvements */
+.btn-sm {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+    .btn-sm i {
+        font-size: 0.9rem;
+    }
+
+.btn-outline-primary {
+    color: #2196f3 !important;
+    border-color: #2196f3 !important;
+}
+
+    .btn-outline-primary:hover {
+        background-color: #2196f3 !important;
+        color: #fff !important;
+    }
+
+.btn-success {
+    background-color: #4caf50 !important;
+    border-color: #4caf50 !important;
+    color: #fff !important;
+}
+
+    .btn-success:hover {
+        background-color: #45a049 !important;
+        border-color: #45a049 !important;
+    }
+
+.btn-info {
+    background-color: #2196f3 !important;
+    border-color: #2196f3 !important;
+    color: #fff !important;
+}
+
+    .btn-info:hover {
+        background-color: #1976d2 !important;
+        border-color: #1976d2 !important;
+    }
+
+/* Vehicle Items - Làm rõ hơn */
+.table tbody td div[style*="font-size: 0.875rem"] {
+    color: #e0e0e0 !important;
+}
+
+    .table tbody td div[style*="font-size: 0.875rem"] div:first-child {
+        color: #ffffff !important;
+        font-weight: 600;
+    }
+
+    .table tbody td div[style*="font-size: 0.875rem"] div[style*="color: #888"] {
+        color: #b0b0b0 !important;
+    }
+
+/* Header Title */
+.testdrive-header h1 {
+    color: #ffffff !important;
+    font-weight: 700;
+}
+
+.header-subtitle {
+    color: #b0b0b0 !important;
+}
+
+/* Card Header */
+.testdrive-card-header h3 {
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+.testdrive-card-header span {
+    color: #b0b0b0 !important;
+}
+
+/* Empty State */
+.empty-title {
+    color: #ffffff !important;
+}
+
+.empty-description {
+    color: #b0b0b0 !important;
+}
+
+/* Pagination */
+.pagination-testdrive {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.page-link-testdrive {
+    color: #2196f3 !important;
+    font-weight: 600;
+}
+
+    .page-link-testdrive.active {
+        background-color: #2196f3 !important;
+        color: #fff !important;
+    }
+
+/* Responsive Actions Column */
+@media (max-width: 1400px) {
+    .table tbody td:last-child {
+        min-width: 250px;
+    }
+}
+
+/* Fix inline form alignment */
+form[style*="display: inline"] {
+    display: inline-block !important;
+    margin: 0 !important;
+}
+
+/* Improve vehicle image */
+.table img {
+    border: 2px solid #333;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}

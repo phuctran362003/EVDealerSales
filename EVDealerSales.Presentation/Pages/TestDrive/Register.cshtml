@@ -1,0 +1,671 @@
+@page
+@model EVDealerSales.Presentation.Pages.TestDrive.RegisterModel
+@{
+    ViewData["Title"] = "Register Test Drive";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/testdrive.css" />
+    <style>
+        .register-testdrive-clean {
+            background: #000;
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .register-testdrive-clean .page-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .register-testdrive-clean .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0 0 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .register-testdrive-clean .page-title i {
+            color: #0070f3;
+        }
+
+        .register-testdrive-clean .page-subtitle {
+            font-size: 1rem;
+            color: #888;
+            margin: 0;
+        }
+
+        .register-testdrive-clean .form-section {
+            background: linear-gradient(135deg, #0a0a0a 0%, #111 100%);
+            border: 1px solid #1a1a1a;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .register-testdrive-clean .section-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #fff;
+            margin: 0 0 1.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .register-testdrive-clean .section-header i {
+            color: #0070f3;
+        }
+
+        /* Search and Filter */
+        .register-testdrive-clean .vehicle-search-bar {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .register-testdrive-clean .search-input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            background: #111;
+            border: 1px solid #1a1a1a;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .register-testdrive-clean .search-input:focus {
+            background: #1a1a1a;
+            border-color: #0070f3;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.1);
+        }
+
+        .register-testdrive-clean .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 1.125rem;
+        }
+
+        /* Compact Vehicle List */
+        .register-testdrive-clean .vehicle-list-compact {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .register-testdrive-clean .vehicle-list-compact::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .register-testdrive-clean .vehicle-list-compact::-webkit-scrollbar-track {
+            background: #111;
+            border-radius: 4px;
+        }
+
+        .register-testdrive-clean .vehicle-list-compact::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        .register-testdrive-clean .vehicle-list-compact::-webkit-scrollbar-thumb:hover {
+            background: #0070f3;
+        }
+
+        .register-testdrive-clean .vehicle-item-compact {
+            display: grid;
+            grid-template-columns: 100px 1fr auto;
+            gap: 1rem;
+            padding: 1rem;
+            background: #0a0a0a;
+            border: 2px solid #1a1a1a;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            align-items: center;
+        }
+
+        .register-testdrive-clean .vehicle-item-compact:hover {
+            border-color: #0070f3;
+            background: #111;
+        }
+
+        .register-testdrive-clean .vehicle-item-compact.selected {
+            border-color: #0070f3;
+            background: #111;
+            box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.2);
+        }
+
+        .register-testdrive-clean .vehicle-item-compact.hidden {
+            display: none;
+        }
+
+        .register-testdrive-clean .vehicle-item-thumb {
+            width: 100px;
+            height: 65px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .register-testdrive-clean .vehicle-item-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .register-testdrive-clean .vehicle-item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .register-testdrive-clean .vehicle-item-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #fff;
+            margin: 0;
+        }
+
+        .register-testdrive-clean .vehicle-item-specs-inline {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.875rem;
+            color: #888;
+        }
+
+        .register-testdrive-clean .vehicle-item-specs-inline span {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .register-testdrive-clean .vehicle-item-specs-inline i {
+            color: #0070f3;
+        }
+
+        .register-testdrive-clean .vehicle-item-price-section {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: flex-end;
+        }
+
+        .register-testdrive-clean .vehicle-item-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f4f4f5;
+        }
+
+        .register-testdrive-clean .select-badge {
+            padding: 0.375rem 0.875rem;
+            background: #0070f3;
+            color: #fff;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: none;
+        }
+
+        .register-testdrive-clean .vehicle-item-compact.selected .select-badge {
+            display: block;
+        }
+
+        .register-testdrive-clean .no-results {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #666;
+        }
+
+        .register-testdrive-clean .no-results i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Form Groups */
+        .register-testdrive-clean .form-group-clean {
+            margin-bottom: 1.5rem;
+        }
+
+        .register-testdrive-clean .form-label-clean {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .register-testdrive-clean .form-label-clean i {
+            color: #0070f3;
+        }
+
+        .register-testdrive-clean .form-control-clean {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: #111;
+            border: 1px solid #1a1a1a;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .register-testdrive-clean .form-control-clean:focus {
+            background: #1a1a1a;
+            border-color: #0070f3;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.1);
+        }
+
+        .register-testdrive-clean .form-hint {
+            font-size: 0.875rem;
+            color: #888;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .register-testdrive-clean .info-box {
+            padding: 1.25rem;
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 3px solid #3b82f6;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+
+        .register-testdrive-clean .info-box-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.75rem;
+        }
+
+        .register-testdrive-clean .info-box-title i {
+            color: #3b82f6;
+        }
+
+        .register-testdrive-clean .info-box ul {
+            margin: 0;
+            padding-left: 1.5rem;
+            color: #ccc;
+        }
+
+        .register-testdrive-clean .info-box li {
+            margin-bottom: 0.5rem;
+        }
+
+        .register-testdrive-clean .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            padding-top: 2rem;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        .register-testdrive-clean .btn-submit {
+            padding: 0.875rem 2rem;
+            background: linear-gradient(135deg, #0070f3 0%, #0060d3 100%);
+            border: none;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .register-testdrive-clean .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 112, 243, 0.4);
+        }
+
+        .register-testdrive-clean .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .register-testdrive-clean .btn-cancel {
+            padding: 0.875rem 2rem;
+            background: transparent;
+            border: 1px solid #333;
+            color: #ccc;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .register-testdrive-clean .btn-cancel:hover {
+            border-color: #666;
+            color: #fff;
+        }
+
+        @@media (max-width: 768px) {
+            .register-testdrive-clean .vehicle-item-compact {
+                grid-template-columns: 1fr;
+            }
+
+            .register-testdrive-clean .vehicle-item-price-section {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .register-testdrive-clean .form-actions {
+                flex-direction: column-reverse;
+            }
+
+            .register-testdrive-clean .btn-submit,
+            .register-testdrive-clean .btn-cancel {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+}
+
+<div class="register-testdrive-clean">
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-calendar-plus"></i>
+                Register Test Drive
+            </h1>
+            <p class="page-subtitle">
+                Select a vehicle and schedule your test drive appointment
+            </p>
+        </div>
+
+        <form method="post" id="testDriveForm">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <!-- Vehicle Selection Section -->
+            <div class="form-section">
+                <h2 class="section-header">
+                    <i class="bi bi-car-front-fill"></i>
+                    Select Your Vehicle
+                </h2>
+
+                <!-- Search Bar -->
+                <div class="vehicle-search-bar">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" 
+                           id="vehicleSearch" 
+                           class="search-input" 
+                           placeholder="Search by vehicle name, model, or trim..."
+                           autocomplete="off">
+                </div>
+
+                <input type="hidden" asp-for="TestDrive.VehicleId" id="selectedVehicleId" />
+                <span asp-validation-for="TestDrive.VehicleId" class="text-danger"></span>
+
+                <!-- Compact Vehicle List -->
+                <div class="vehicle-list-compact" id="vehicleList">
+                    @foreach (var vehicle in Model.VehicleList)
+                    {
+                        var vehicleData = vehicle.Text.Split(" - ");
+                        var vehicleName = vehicleData[0];
+                        var vehiclePrice = vehicleData.Length > 1 ? vehicleData[1] : "";
+                        
+                        <div class="vehicle-item-compact @(Model.TestDrive?.VehicleId.ToString() == vehicle.Value ? "selected" : "")" 
+                             data-vehicle-id="@vehicle.Value"
+                             data-vehicle-name="@vehicleName.ToLower()"
+                             onclick="selectVehicle('@vehicle.Value')">
+                            <div class="vehicle-item-thumb">
+                                <img src="/placeholder.svg" alt="@vehicleName" class="vehicle-img" data-vehicle-id="@vehicle.Value" />
+                            </div>
+                            <div class="vehicle-item-info">
+                                <h3 class="vehicle-item-name">@vehicleName</h3>
+                                <div class="vehicle-item-specs-inline">
+                                    <span>
+                                        <i class="bi bi-battery-charging"></i>
+                                        <span class="vehicle-battery" data-vehicle-id="@vehicle.Value">--</span>
+                                    </span>
+                                    <span>
+                                        <i class="bi bi-speedometer2"></i>
+                                        <span class="vehicle-range" data-vehicle-id="@vehicle.Value">--</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="vehicle-item-price-section">
+                                <div class="vehicle-item-price">@vehiclePrice</div>
+                                <div class="select-badge">
+                                    <i class="bi bi-check-circle-fill"></i> Selected
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="no-results" id="noResults" style="display: none;">
+                    <i class="bi bi-search"></i>
+                    <p>No vehicles found matching your search</p>
+                </div>
+            </div>
+
+            <!-- Appointment Details Section -->
+            <div class="form-section">
+                <h2 class="section-header">
+                    <i class="bi bi-calendar-check"></i>
+                    Appointment Details
+                </h2>
+
+                <!-- Email -->
+                <div class="form-group-clean">
+                    <label asp-for="TestDrive.CustomerEmail" class="form-label-clean">
+                        <i class="bi bi-envelope"></i>
+                        Your Email
+                    </label>
+                    <input asp-for="TestDrive.CustomerEmail" class="form-control-clean"
+                           type="email" value="@(User.Identity?.Name ?? "")" required>
+                    <span asp-validation-for="TestDrive.CustomerEmail" class="text-danger"></span>
+                </div>
+
+                <!-- Date & Time -->
+                <div class="form-group-clean">
+                    <label asp-for="TestDrive.ScheduledAt" class="form-label-clean">
+                        <i class="bi bi-calendar3"></i>
+                        Preferred Date & Time
+                    </label>
+                    <input asp-for="TestDrive.ScheduledAt" class="form-control-clean"
+                           type="datetime-local" required id="scheduledAt">
+                    <span asp-validation-for="TestDrive.ScheduledAt" class="text-danger"></span>
+                    <div class="form-hint">
+                        <i class="bi bi-info-circle"></i>
+                        Each test drive session is approximately 2 hours. Please book at least 24 hours in advance.
+                    </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="form-group-clean">
+                    <label asp-for="TestDrive.Notes" class="form-label-clean">
+                        <i class="bi bi-chat-left-text"></i>
+                        Additional Notes (Optional)
+                    </label>
+                    <textarea asp-for="TestDrive.Notes" class="form-control-clean" rows="4"
+                              placeholder="Any special requests or notes about your test drive..."></textarea>
+                    <span asp-validation-for="TestDrive.Notes" class="text-danger"></span>
+                </div>
+            </div>
+
+            <!-- Important Information -->
+            <div class="info-box">
+                <div class="info-box-title">
+                    <i class="bi bi-info-circle"></i>
+                    Important Information
+                </div>
+                <ul>
+                    <li>You can only have one active test drive booking at a time</li>
+                    <li>Your booking will be in "Pending" status until confirmed by our staff</li>
+                    <li>You'll receive a notification once your booking is confirmed</li>
+                    <li>Please bring your driver's license on the day of the test drive</li>
+                </ul>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a asp-page="/Vehicle/BrowseVehicles" class="btn-cancel">
+                    <i class="bi bi-x-circle"></i>
+                    Cancel
+                </a>
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <i class="bi bi-check-circle"></i>
+                    Register Test Drive
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        let vehiclesData = {};
+
+        // Load vehicle details on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Fetch all vehicle details
+            const vehicleItems = document.querySelectorAll('.vehicle-item-compact');
+            
+            for (const item of vehicleItems) {
+                const vehicleId = item.dataset.vehicleId;
+                try {
+                    const response = await fetch(`/TestDrive/Register?handler=VehicleDetails&vehicleId=${vehicleId}`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        vehiclesData[vehicleId] = data;
+                        
+                        // Update image
+                        const img = document.querySelector(`.vehicle-img[data-vehicle-id="${vehicleId}"]`);
+                        if (img) img.src = data.imageUrl;
+                        
+                        // Update specs
+                        const battery = document.querySelector(`.vehicle-battery[data-vehicle-id="${vehicleId}"]`);
+                        if (battery) battery.textContent = `${data.batteryCapacity} kWh`;
+                        
+                        const range = document.querySelector(`.vehicle-range[data-vehicle-id="${vehicleId}"]`);
+                        if (range) range.textContent = `${data.rangeKM} km`;
+                    }
+                } catch (error) {
+                    console.error('Error fetching vehicle details:', error);
+                }
+            }
+
+            // Set default date to tomorrow at 10 AM (current date + 1 day)
+            const scheduledInput = document.getElementById('scheduledAt');
+            if (!scheduledInput.value) {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(10, 0, 0, 0);
+                scheduledInput.value = tomorrow.toISOString().slice(0, 16);
+            }
+
+            // Set minimum date to tomorrow at 9 AM
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(9, 0, 0, 0);
+            scheduledInput.min = tomorrow.toISOString().slice(0, 16);
+        });
+
+        // Search functionality
+        document.getElementById('vehicleSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const vehicleItems = document.querySelectorAll('.vehicle-item-compact');
+            const noResults = document.getElementById('noResults');
+            let visibleCount = 0;
+
+            vehicleItems.forEach(item => {
+                const vehicleName = item.dataset.vehicleName;
+                
+                if (vehicleName.includes(searchTerm)) {
+                    item.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+
+            // Show/hide no results message
+            if (visibleCount === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        });
+
+        function selectVehicle(vehicleId) {
+            // Remove selected class from all items
+            document.querySelectorAll('.vehicle-item-compact').forEach(item => {
+                item.classList.remove('selected');
+            });
+
+            // Add selected class to clicked item
+            const selectedItem = document.querySelector(`.vehicle-item-compact[data-vehicle-id="${vehicleId}"]`);
+            if (selectedItem) {
+                selectedItem.classList.add('selected');
+            }
+
+            // Update hidden input
+            document.getElementById('selectedVehicleId').value = vehicleId;
+
+            // Scroll to appointment details
+            const appointmentSection = document.querySelectorAll('.form-section')[1];
+            if (appointmentSection) {
+                appointmentSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        // Form validation
+        document.getElementById('testDriveForm').addEventListener('submit', function(e) {
+            const vehicleId = document.getElementById('selectedVehicleId').value;
+            
+            if (!vehicleId) {
+                e.preventDefault();
+                alert('Please select a vehicle for your test drive.');
+                document.getElementById('vehicleList').scrollIntoView({ behavior: 'smooth' });
+                return false;
+            }
+
+            const scheduledAt = new Date(document.getElementById('scheduledAt').value);
+            const now = new Date();
+            const minBookingTime = new Date(now.getTime() + (24 * 60 * 60 * 1000));
+
+            if (scheduledAt < minBookingTime) {
+                e.preventDefault();
+                alert('Please select a date and time at least 24 hours in advance.');
+                return false;
+            }
+
+            // Add loading state
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Processing...';
+        });
+    </script>
+}

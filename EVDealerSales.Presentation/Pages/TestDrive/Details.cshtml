@@ -1,0 +1,471 @@
+@page "{id:guid}"
+@model EVDealerSales.Presentation.Pages.TestDrive.DetailsModel
+@{
+    ViewData["Title"] = "Test Drive Details";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/staff-management.css" />
+}
+
+<div class="staff-page-clean">
+    <div class="container">
+        <!-- Header -->
+        <div class="staff-header-clean">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                    <h1 class="staff-title-clean">
+                        <i class="bi bi-calendar-check"></i>
+                        Test Drive Details
+                    </h1>
+                    <p class="staff-subtitle-clean">
+                        View and manage test drive appointment
+                    </p>
+                </div>
+                <div>
+                    @if (User.IsInRole("DealerStaff") || User.IsInRole("DealerManager"))
+                    {
+                        <a asp-page="Index" class="btn-clean btn-secondary-clean">
+                            <i class="bi bi-arrow-left"></i>
+                            Back to List
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-page="MyTestDrives" class="btn-clean btn-secondary-clean">
+                            <i class="bi bi-arrow-left"></i>
+                            My Test Drives
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill"></i>
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (Model.TestDrive == null)
+        {
+            <div class="empty-state-clean">
+                <div class="empty-icon-clean">
+                    <i class="bi bi-calendar-x"></i>
+                </div>
+                <h3 class="empty-title-clean">Test Drive Not Found</h3>
+                <p class="empty-description-clean">
+                    The test drive you're looking for doesn't exist or has been removed.
+                </p>
+                <a asp-page="Index" class="btn-clean btn-primary-clean" style="margin-top: 1rem;">
+                    <i class="bi bi-arrow-left"></i>
+                    Back to List
+                </a>
+            </div>
+        }
+        else
+        {
+            <!-- Status & Actions Bar -->
+            <div class="staff-card-clean" style="margin-bottom: 1.5rem;">
+                <div class="staff-card-body-clean" style="padding: 1rem 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <span style="color: #888; font-size: 0.875rem;">Status:</span>
+                            @switch (Model.TestDrive.Status)
+                            {
+                                case EVDealerSales.BusinessObject.Enums.TestDriveStatus.Pending:
+                                    <span class="badge-clean badge-pending">
+                                        <i class="bi bi-clock"></i> Pending
+                                    </span>
+                                    break;
+                                case EVDealerSales.BusinessObject.Enums.TestDriveStatus.Confirmed:
+                                    <span class="badge-clean badge-info">
+                                        <i class="bi bi-check-circle"></i> Confirmed
+                                    </span>
+                                    break;
+                                case EVDealerSales.BusinessObject.Enums.TestDriveStatus.Completed:
+                                    <span class="badge-clean badge-success">
+                                        <i class="bi bi-check-circle-fill"></i> Completed
+                                    </span>
+                                    break;
+                                case EVDealerSales.BusinessObject.Enums.TestDriveStatus.Canceled:
+                                    <span class="badge-clean badge-danger">
+                                        <i class="bi bi-x-circle"></i> Canceled
+                                    </span>
+                                    break;
+                            }
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div style="display: flex; gap: 0.5rem;">
+                            @if (User.IsInRole("DealerStaff") || User.IsInRole("DealerManager"))
+                            {
+                                @if (Model.TestDrive.Status == EVDealerSales.BusinessObject.Enums.TestDriveStatus.Pending)
+                                {
+                                    <button type="button" class="btn-clean btn-success-clean" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                                        <i class="bi bi-check-circle"></i> Confirm
+                                    </button>
+                                }
+
+                                @if (Model.TestDrive.Status == EVDealerSales.BusinessObject.Enums.TestDriveStatus.Confirmed)
+                                {
+                                    var canComplete = Model.TestDrive.ScheduledAt <= DateTime.Now;
+                                    <button type="button" class="btn-clean btn-primary-clean" 
+                                            @(canComplete ? "data-bs-toggle=\"modal\" data-bs-target=\"#completeModal\"" : "disabled=\"disabled\"")>
+                                        <i class="bi bi-check-circle-fill"></i> Complete
+                                    </button>
+
+                                    @if (!canComplete)
+                                    {
+                                        <div style="font-size:0.85rem; color:#888; margin-top:6px;">Cannot complete before scheduled time. Scheduled: @Model.TestDrive.ScheduledAt.ToString("MMM dd, yyyy hh:mm tt")</div>
+                                    }
+                                }
+                            }
+
+                            @if (Model.TestDrive.Status != EVDealerSales.BusinessObject.Enums.TestDriveStatus.Completed &&
+                               Model.TestDrive.Status != EVDealerSales.BusinessObject.Enums.TestDriveStatus.Canceled)
+                            {
+                                <button type="button" class="btn-clean btn-danger-clean" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                                    <i class="bi bi-x-circle"></i> Cancel
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Grid -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <!-- Left Column: Vehicle & Schedule -->
+                <div class="staff-card-clean">
+                    <div class="staff-card-header-clean">
+                        <h3 class="staff-card-title-clean">
+                            <i class="bi bi-car-front"></i>
+                            Vehicle & Schedule
+                        </h3>
+                    </div>
+                    <div class="staff-card-body-clean">
+                        <!-- Vehicle Info -->
+                        <div style="display: flex; gap: 1rem; padding: 1rem; background: rgba(0, 112, 243, 0.08); border-left: 3px solid #0070f3; border-radius: 8px; margin-bottom: 1.5rem;">
+                            <img src="@Model.TestDrive.VehicleImageUrl" alt="@Model.TestDrive.VehicleModelName"
+                                 style="width: 100px; height: 100px; border-radius: 8px; object-fit: cover; flex-shrink: 0;" />
+                            <div style="flex: 1;">
+                                <div style="font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 0.25rem;">Vehicle</div>
+                                <div style="color: #fff; font-weight: 700; font-size: 1.1rem; margin-bottom: 0.25rem;">
+                                    @Model.TestDrive.VehicleModelName
+                                </div>
+                                <div style="color: #888; font-size: 0.9rem; margin-bottom: 0.75rem;">
+                                    @Model.TestDrive.VehicleTrimName
+                                </div>
+                                <a asp-page="/Vehicle/DetailVehicles" asp-route-id="@Model.TestDrive.VehicleId"
+                                   class="btn-action-clean" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">
+                                    <i class="bi bi-info-circle"></i> View Details
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Schedule Info -->
+                        <div style="padding: 1rem; background: rgba(139, 92, 246, 0.08); border-left: 3px solid #8b5cf6; border-radius: 8px;">
+                            <div style="font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 0.5rem;">
+                                <i class="bi bi-calendar-event"></i> Scheduled Date & Time
+                            </div>
+                            <div style="color: #fff; font-weight: 700; font-size: 1.25rem; margin-bottom: 0.25rem;">
+                                @Model.TestDrive.ScheduledAt.ToString("MMMM dd, yyyy")
+                            </div>
+                            <div style="color: #fff; font-weight: 600; font-size: 1rem; margin-bottom: 0.5rem;">
+                                @Model.TestDrive.ScheduledAt.ToString("hh:mm tt")
+                            </div>
+                            <div style="color: #888; font-size: 0.8rem;">
+                                <i class="bi bi-clock"></i> Duration: ~2 hours
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Customer & Staff -->
+                <div class="staff-card-clean">
+                    <div class="staff-card-header-clean">
+                        <h3 class="staff-card-title-clean">
+                            <i class="bi bi-people"></i>
+                            People Involved
+                        </h3>
+                    </div>
+                    <div class="staff-card-body-clean">
+                        <!-- Customer Info -->
+                        <div style="margin-bottom: 1.5rem;">
+                            <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 0.75rem;">
+                                <i class="bi bi-person"></i> Customer
+                            </div>
+                            <div class="info-card-clean">
+                                <div class="info-item-clean">
+                                    <div class="info-label-clean">Full Name</div>
+                                    <div class="info-value-clean">@Model.TestDrive.CustomerName</div>
+                                </div>
+                                <div class="info-item-clean">
+                                    <div class="info-label-clean">Email</div>
+                                    <div class="info-value-clean">@Model.TestDrive.CustomerEmail</div>
+                                </div>
+                                @if (!string.IsNullOrEmpty(Model.TestDrive.CustomerPhone))
+                                {
+                                    <div class="info-item-clean">
+                                        <div class="info-label-clean">Phone</div>
+                                        <div class="info-value-clean">@Model.TestDrive.CustomerPhone</div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Staff Info -->
+                        <div>
+                            <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 0.75rem;">
+                                <i class="bi bi-person-badge"></i> Assigned Staff
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.TestDrive.StaffName))
+                            {
+                                <div class="info-card-clean">
+                                    <div class="info-item-clean">
+                                        <div class="info-label-clean">Staff Name</div>
+                                        <div class="info-value-clean">@Model.TestDrive.StaffName</div>
+                                    </div>
+                                    <div class="info-item-clean">
+                                        <div class="info-label-clean">Email</div>
+                                        <div class="info-value-clean">@Model.TestDrive.StaffEmail</div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-warning" style="margin: 0;">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    No staff assigned yet
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline & Notes -->
+            <div class="staff-card-clean">
+                <div class="staff-card-header-clean">
+                    <h3 class="staff-card-title-clean">
+                        <i class="bi bi-clock-history"></i>
+                        Timeline & Notes
+                    </h3>
+                </div>
+                <div class="staff-card-body-clean">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                        <!-- Timeline -->
+                        <div>
+                            <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 1rem;">Event History</div>
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                <div style="display: flex; align-items: start; gap: 0.75rem;">
+                                    <i class="bi bi-plus-circle" style="color: #22c55e; font-size: 1.25rem; flex-shrink: 0;"></i>
+                                    <div>
+                                        <div style="color: #fff; font-weight: 500; font-size: 0.9rem;">Created</div>
+                                        <div style="color: #888; font-size: 0.8rem;">@Model.TestDrive.CreatedAt.ToString("MMM dd, yyyy hh:mm tt")</div>
+                                    </div>
+                                </div>
+                                @if (Model.TestDrive.ConfirmedAt.HasValue)
+                                {
+                                    <div style="display: flex; align-items: start; gap: 0.75rem;">
+                                        <i class="bi bi-check-circle" style="color: #3b82f6; font-size: 1.25rem; flex-shrink: 0;"></i>
+                                        <div>
+                                            <div style="color: #fff; font-weight: 500; font-size: 0.9rem;">Confirmed</div>
+                                            <div style="color: #888; font-size: 0.8rem;">@Model.TestDrive.ConfirmedAt.Value.ToString("MMM dd, yyyy hh:mm tt")</div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.TestDrive.CompletedAt.HasValue)
+                                {
+                                    <div style="display: flex; align-items: start; gap: 0.75rem;">
+                                        <i class="bi bi-check-circle-fill" style="color: #22c55e; font-size: 1.25rem; flex-shrink: 0;"></i>
+                                        <div>
+                                            <div style="color: #fff; font-weight: 500; font-size: 0.9rem;">Completed</div>
+                                            <div style="color: #888; font-size: 0.8rem;">@Model.TestDrive.CompletedAt.Value.ToString("MMM dd, yyyy hh:mm tt")</div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (Model.TestDrive.CanceledAt.HasValue)
+                                {
+                                    <div style="display: flex; align-items: start; gap: 0.75rem;">
+                                        <i class="bi bi-x-circle" style="color: #ef4444; font-size: 1.25rem; flex-shrink: 0;"></i>
+                                        <div>
+                                            <div style="color: #fff; font-weight: 500; font-size: 0.9rem;">Canceled</div>
+                                            <div style="color: #888; font-size: 0.8rem;">@Model.TestDrive.CanceledAt.Value.ToString("MMM dd, yyyy hh:mm tt")</div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Notes & Cancellation Reason -->
+                        <div>
+                            @if (!string.IsNullOrEmpty(Model.TestDrive.Notes))
+                            {
+                                <div style="margin-bottom: 1.5rem;">
+                                    <div style="color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 0.75rem;">
+                                        <i class="bi bi-sticky"></i> Notes
+                                    </div>
+                                    <div style="background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; padding: 1rem;">
+                                        <p style="color: #ccc; margin: 0; font-size: 0.9rem; line-height: 1.5;">@Model.TestDrive.Notes</p>
+                                    </div>
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(Model.TestDrive.CancellationReason))
+                            {
+                                <div>
+                                    <div style="color: #ef4444; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 0.75rem;">
+                                        <i class="bi bi-exclamation-triangle"></i> Cancellation Reason
+                                    </div>
+                                    <div class="alert alert-danger" style="margin: 0;">
+                                        @Model.TestDrive.CancellationReason
+                                    </div>
+                                </div>
+                            }
+
+                            @if (string.IsNullOrEmpty(Model.TestDrive.Notes) && string.IsNullOrEmpty(Model.TestDrive.CancellationReason))
+                            {
+                                <div style="color: #666; font-style: italic; text-align: center; padding: 2rem 0;">
+                                    No additional notes
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content modal-clean">
+            <form method="post" asp-page-handler="Confirm" asp-route-id="@Model.TestDrive?.Id">
+                <div class="modal-header-clean" style="background: rgba(34, 197, 94, 0.1); border-bottom-color: rgba(34, 197, 94, 0.3);">
+                    <h3 class="modal-title-clean" style="color: #22c55e;">
+                        <i class="bi bi-check-circle"></i>
+                        Confirm Test Drive
+                    </h3>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body-clean">
+                    <p style="margin-bottom: 1rem;">Are you sure you want to confirm this test drive appointment?</p>
+                    <div class="filter-group-clean">
+                        <label class="filter-label-clean">Confirmation Notes (Optional)</label>
+                        <textarea class="filter-input-clean" name="notes" rows="3"
+                                  placeholder="Any notes about the confirmation..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer-clean">
+                    <button type="button" class="btn-clean btn-secondary-clean" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn-clean btn-success-clean">
+                        <i class="bi bi-check-circle"></i> Confirm
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Complete Modal -->
+<div class="modal fade" id="completeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content modal-clean">
+            <form method="post" asp-page-handler="Complete" asp-route-id="@Model.TestDrive?.Id">
+                <div class="modal-header-clean" style="background: rgba(0, 112, 243, 0.1); border-bottom-color: rgba(0, 112, 243, 0.3);">
+                    <h3 class="modal-title-clean" style="color: #0070f3;">
+                        <i class="bi bi-check-circle-fill"></i>
+                        Complete Test Drive
+                    </h3>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body-clean">
+                    <p style="margin-bottom: 1rem;">Mark this test drive as completed?</p>
+                    <div class="filter-group-clean">
+                        <label class="filter-label-clean">Completion Notes (Optional)</label>
+                        <textarea class="filter-input-clean" name="notes" rows="3"
+                                  placeholder="How did the test drive go? Any feedback?"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer-clean">
+                    <button type="button" class="btn-clean btn-secondary-clean" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    @{ var canCompleteModal = Model.TestDrive != null && Model.TestDrive.ScheduledAt <= DateTime.Now; }
+                    <button type="submit" class="btn-clean btn-primary-clean" @(canCompleteModal ? "" : "disabled=\"disabled\"")>
+                        <i class="bi bi-check-circle-fill"></i> Complete
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content modal-clean">
+            <form method="post" asp-page-handler="Cancel" asp-route-id="@Model.TestDrive?.Id">
+                <div class="modal-header-clean" style="background: rgba(239, 68, 68, 0.1); border-bottom-color: rgba(239, 68, 68, 0.3);">
+                    <h3 class="modal-title-clean" style="color: #ef4444;">
+                        <i class="bi bi-x-circle"></i>
+                        Cancel Test Drive
+                    </h3>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body-clean">
+                    <div class="alert alert-warning" style="margin-bottom: 1rem;">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        This action cannot be undone
+                    </div>
+                    <p style="margin-bottom: 1rem;">Are you sure you want to cancel this test drive?</p>
+                    <div class="filter-group-clean">
+                        <label class="filter-label-clean">Cancellation Reason (Optional)</label>
+                        <textarea class="filter-input-clean" name="reason" rows="3"
+                                  placeholder="Why is this test drive being canceled?"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer-clean">
+                    <button type="button" class="btn-clean btn-secondary-clean" data-bs-dismiss="modal">
+                        Keep Appointment
+                    </button>
+                    <button type="submit" class="btn-clean btn-danger-clean">
+                        <i class="bi bi-x-circle"></i> Cancel Appointment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function () {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 300);
+            });
+        }, 5000);
+    </script>
+}

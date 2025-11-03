@@ -1,0 +1,345 @@
+﻿@page
+@using EVDealerSales.BusinessObject.DTOs.VehicleDTOs
+@using EVDealerSales.Business.Utils
+@model EVDealerSales.Presentation.Pages.Vehicle.BrowseVehiclesModel
+@{
+    ViewData["Title"] = "Browse Vehicles";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/vehicle.css" />
+}
+
+<div class="vehicle-browse-container">
+    <div class="container-fluid">
+
+        <div class="vehicle-header">
+            <div class="text-center">
+                <h1 class="vehicle-title">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                    Browse Our Electric Vehicles
+                </h1>
+                <p class="vehicle-subtitle">
+                    Discover our collection of cutting-edge electric vehicles
+                </p>
+            </div>
+        </div>
+        <div class="vehicle-controls">
+            <form method="get" class="search-filter-form">
+                <div class="search-wrapper">
+                    <input type="text"
+                           class="search-input"
+                           name="search"
+                           value="@ViewData["Search"]"
+                           placeholder="Search by model or trim..." />
+                </div>
+
+                <div class="filter-controls">
+                    <select name="sortBy" class="filter-select">
+                        <option value="">Sort By</option>
+                        <option value="ModelName" selected="@(ViewData["SortBy"]?.ToString() == "ModelName")">Model Name</option>
+                        <option value="ModelYear" selected="@(ViewData["SortBy"]?.ToString() == "ModelYear")">Model Year</option>
+                        <option value="BasePrice" selected="@(ViewData["SortBy"]?.ToString() == "BasePrice")">Base Price</option>
+                    </select>
+
+                    <select name="ascending" class="filter-select">
+                        <option value="true" selected="@(ViewData["Ascending"]?.ToString() == "true" || string.IsNullOrEmpty(ViewData["Ascending"]?.ToString()))">Ascending</option>
+                        <option value="false" selected="@(ViewData["Ascending"]?.ToString() == "false")">Descending</option>
+                    </select>
+
+                    <button type="submit" class="btn-search">
+                        <i class="bi bi-search"></i>
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        @if (Model.Vehicles.TotalCount == 0)
+        {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-car-front"></i>
+                </div>
+                <h3 class="empty-title">No vehicles found</h3>
+                <p class="empty-description">
+                    @if (!string.IsNullOrEmpty(ViewData["Search"]?.ToString()))
+                    {
+                        <span>Try adjusting your search criteria or filters</span>
+                    }
+                    else
+                    {
+                        <span>Check back soon for new electric vehicles</span>
+                    }
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="vehicle-grid">
+                @foreach (var vehicle in Model.Vehicles)
+                {
+                    <div class="vehicle-card">
+                        <a asp-page="/Vehicle/DetailVehicles" asp-route-id="@vehicle.Id" class="vehicle-image-link">
+                            <div class="vehicle-image-wrapper">
+                                <img src="@(string.IsNullOrEmpty(vehicle.ImageUrl) ? "/placeholder.svg?height=300&width=500" : vehicle.ImageUrl)"
+                                     alt="@vehicle.ModelName @vehicle.TrimName"
+                                     class="vehicle-image" />
+                                <div class="image-overlay">
+                                    <i class="bi bi-eye"></i>
+                                    <span>View Details</span>
+                                </div>
+                            </div>
+                        </a>
+
+                        <div class="vehicle-card-content">
+                            <div class="vehicle-header-info">
+                                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                                    <div>
+                                        <h3 class="vehicle-model">@vehicle.ModelName</h3>
+                                        <p class="vehicle-trim">@vehicle.TrimName</p>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div style="display: flex; align-items: center; gap: 4px; font-size: 0.875rem; font-weight: 600; color: @(vehicle.Stock <= 0 ? "#ef4444" : vehicle.Stock <= 5 ? "#ffa500" : "#00d4aa");">
+                                            <i class="bi bi-box-seam"></i>
+                                            <span>@vehicle.Stock</span>
+                                        </div>
+                                        <div style="font-size: 0.75rem; color: @(vehicle.Stock <= 0 ? "#ef4444" : vehicle.Stock <= 5 ? "#ffa500" : "#64748b");">
+                                            @(vehicle.Stock <= 0 ? "Out of Stock" : vehicle.Stock <= 5 ? "Low Stock" : "In Stock")
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="vehicle-meta">
+                                <span class="vehicle-year">
+                                    <i class="bi bi-calendar3"></i>
+                                    @vehicle.ModelYear
+                                </span>
+                                <span class="vehicle-price">$@vehicle.BasePrice.ToString("N0")</span>
+                            </div>
+
+                            <div class="vehicle-specs">
+                                <div class="spec-item">
+                                    <i class="bi bi-battery-charging"></i>
+                                    <div class="spec-content">
+                                        <span class="spec-value">@vehicle.BatteryCapacity kWh</span>
+                                        <span class="spec-label">Battery</span>
+                                    </div>
+                                </div>
+                                <div class="spec-item">
+                                    <i class="bi bi-speedometer"></i>
+                                    <div class="spec-content">
+                                        <span class="spec-value">@vehicle.RangeKM km</span>
+                                        <span class="spec-label">Range</span>
+                                    </div>
+                                </div>
+                                <div class="spec-item">
+                                    <i class="bi bi-lightning-charge"></i>
+                                    <div class="spec-content">
+                                        <span class="spec-value">@vehicle.ChargingTime min</span>
+                                        <span class="spec-label">Charging</span>
+                                    </div>
+                                </div>
+                                <div class="spec-item">
+                                    <i class="bi bi-speedometer2"></i>
+                                    <div class="spec-content">
+                                        <span class="spec-value">@vehicle.TopSpeed km/h</span>
+                                        <span class="spec-label">Top Speed</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="vehicle-actions">
+                            <a asp-page="/Vehicle/DetailVehicles" asp-route-id="@vehicle.Id" class="btn-view-details">
+                                View Details
+                                <i class="bi bi-arrow-right"></i>
+                            </a>
+                            <button type="button"
+                                    class="btn-compare"
+                                    onclick="addToCompare('@vehicle.Id', '@vehicle.ModelName @vehicle.TrimName')"
+                                    data-vehicle-id="@vehicle.Id">
+                                <i class="bi bi-plus-circle"></i>
+                                Compare
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            @if (Model.Vehicles.TotalPages > 1)
+            {
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        Showing @((Model.Vehicles.CurrentPage - 1) * Model.Vehicles.PageSize + 1) - @Math.Min(Model.Vehicles.CurrentPage * Model.Vehicles.PageSize, Model.Vehicles.TotalCount) of @Model.Vehicles.TotalCount vehicles
+                    </div>
+                    <div class="pagination-controls">
+                        @if (Model.Vehicles.HasPrevious)
+                        {
+                            <a class="page-btn"
+                               asp-page="./BrowseVehicles"
+                               asp-route-PageNumber="@(Model.Vehicles.CurrentPage - 1)"
+                               asp-route-PageSize="@Model.Vehicles.PageSize"
+                               asp-route-search="@ViewData["Search"]"
+                               asp-route-sortBy="@ViewData["SortBy"]"
+                               asp-route-ascending="@ViewData["Ascending"]">
+                                <i class="bi bi-chevron-left"></i>
+                                Previous
+                            </a>
+                        }
+
+                        @if (Model.Vehicles.HasNext)
+                        {
+                            <a class="page-btn"
+                               asp-page="./BrowseVehicles"
+                               asp-route-PageNumber="@(Model.Vehicles.CurrentPage + 1)"
+                               asp-route-PageSize="@Model.Vehicles.PageSize"
+                               asp-route-search="@ViewData["Search"]"
+                               asp-route-sortBy="@ViewData["SortBy"]"
+                               asp-route-ascending="@ViewData["Ascending"]">
+                                Next
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let compareList = JSON.parse(sessionStorage.getItem('compareList') || '[]');
+
+        // Update UI on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCompareButtons();
+            if (compareList.length > 0) {
+                showCompareBar();
+            }
+        });
+
+        function addToCompare(vehicleId, vehicleName) {
+            // Check if already in list
+            const existingItem = compareList.find(item => item.id === vehicleId);
+
+            if (existingItem) {
+                // Remove from list
+                compareList = compareList.filter(item => item.id !== vehicleId);
+                sessionStorage.setItem('compareList', JSON.stringify(compareList));
+                updateCompareButtons();
+
+                if (compareList.length === 0) {
+                    hideCompareBar();
+                } else {
+                    updateCompareBar();
+                }
+                return;
+            }
+
+            // Check limit
+            if (compareList.length >= 2) {
+                alert('You can only compare 2 vehicles at a time. Please remove one first.');
+                return;
+            }
+
+            // Add to list
+            compareList.push({ id: vehicleId, name: vehicleName });
+            sessionStorage.setItem('compareList', JSON.stringify(compareList));
+            updateCompareButtons();
+            showCompareBar();
+
+            // Auto-redirect if 2 vehicles selected
+            if (compareList.length === 2) {
+                setTimeout(() => {
+                    window.location.href = `/Vehicle/Compare?id1=${compareList[0].id}&id2=${compareList[1].id}`;
+                }, 500);
+            }
+        }
+
+        function updateCompareButtons() {
+            document.querySelectorAll('.btn-compare').forEach(btn => {
+                const vehicleId = btn.getAttribute('data-vehicle-id');
+                const isSelected = compareList.some(item => item.id === vehicleId);
+
+                if (isSelected) {
+                    btn.classList.add('selected');
+                    btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Selected';
+                } else {
+                    btn.classList.remove('selected');
+                    btn.innerHTML = '<i class="bi bi-plus-circle"></i> Compare';
+                }
+            });
+        }
+
+        function showCompareBar() {
+            let compareBar = document.getElementById('compareBar');
+            if (!compareBar) {
+                compareBar = document.createElement('div');
+                compareBar.id = 'compareBar';
+                compareBar.className = 'compare-bar';
+                document.body.appendChild(compareBar);
+            }
+            updateCompareBar();
+            compareBar.style.display = 'flex';
+        }
+
+        function updateCompareBar() {
+            const compareBar = document.getElementById('compareBar');
+            if (!compareBar) return;
+
+            compareBar.innerHTML = `
+                <div class="compare-bar-content">
+                    <div class="compare-bar-title">
+                        <i class="bi bi-cart-check"></i>
+                        <span>Compare Vehicles (${compareList.length}/2)</span>
+                    </div>
+                    <div class="compare-bar-items">
+                        ${compareList.map(item => `
+                            <div class="compare-item">
+                                <span>${item.name}</span>
+                                <button onclick="addToCompare('${item.id}', '${item.name}')" class="remove-item">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="compare-bar-actions">
+                        ${compareList.length === 2 ? `
+                            <button onclick="goToCompare()" class="btn-compare-now">
+                                <i class="bi bi-arrow-right-circle"></i>
+                                Compare Now
+                            </button>
+                        ` : ''}
+                        <button onclick="clearCompareList()" class="btn-clear">
+                            <i class="bi bi-trash"></i>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function hideCompareBar() {
+            const compareBar = document.getElementById('compareBar');
+            if (compareBar) {
+                compareBar.style.display = 'none';
+            }
+        }
+
+        function clearCompareList() {
+            compareList = [];
+            sessionStorage.removeItem('compareList');
+            updateCompareButtons();
+            hideCompareBar();
+        }
+
+        function goToCompare() {
+            if (compareList.length === 2) {
+                window.location.href = `/Vehicle/Compare?id1=${compareList[0].id}&id2=${compareList[1].id}`;
+            }
+        }
+    </script>
+}

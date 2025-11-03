@@ -1,0 +1,147 @@
+﻿@page
+@model EVDealerSales.Presentation.Pages.Home.LandingPagecshtmlModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/landingPage.css" />
+}
+
+<section class="hero-section">
+    <div class="container-fluid px-0">
+        <div class="row g-0 min-vh-100">
+            <div class="col-lg-6 d-flex align-items-center">
+                <div class="hero-content p-5">
+                    <div class="hero-badge mb-4">
+                        <i class="bi bi-lightning-charge-fill me-2"></i>
+                        The Future is Electric
+                    </div>
+                    <h1 class="hero-title mb-4">
+                        Drive the Future with
+                        <span class="text-primary">Premium Electric Vehicles</span>
+                    </h1>
+                    <p class="hero-description mb-5">
+                        Experience the perfect blend of cutting-edge technology, sustainable performance,
+                        and luxury design. Join thousands of drivers who've made the switch to electric.
+                    </p>
+                    <div class="hero-actions">
+                        <a asp-page="/Vehicle/BrowseVehicles" class="btn btn-primary btn-lg me-3">
+                            <i class="bi bi-car-front me-2"></i>
+                            Browse Vehicles
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-image-full">
+                    <img src="https://images.unsplash.com/photo-1722084937105-ca3ac8765034?q=80&w=688&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                         alt="Premium Electric Vehicle" class="hero-image">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="stats-section py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card text-center">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Miles Range</div>
+                    <div class="stat-description">on a single charge</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card text-center">
+                    <div class="stat-number">0-60</div>
+                    <div class="stat-label">in 3.2 seconds</div>
+                    <div class="stat-description">lightning fast acceleration</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card text-center">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-label">Customer Satisfaction</div>
+                    <div class="stat-description">rated by our clients</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card text-center">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Support</div>
+                    <div class="stat-description">always here to help</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="benefits-section py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="benefits-content">
+                    <h2 class="section-title mb-4">Why Choose Electric?</h2>
+                    <p class="section-description mb-5">
+                        Make the smart choice for your wallet, your family, and the planet.
+                        Electric vehicles offer unmatched benefits that traditional cars simply can't match.
+                    </p>
+
+                    <div class="benefit-list">
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="bi bi-piggy-bank"></i>
+                            </div>
+                            <div class="benefit-content">
+                                <h5>Save Money</h5>
+                                <p>Lower fuel costs, reduced maintenance, and tax incentives</p>
+                            </div>
+                        </div>
+
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="bi bi-leaf"></i>
+                            </div>
+                            <div class="benefit-content">
+                                <h5>Zero Emissions</h5>
+                                <p>Contribute to cleaner air and a healthier environment</p>
+                            </div>
+                        </div>
+
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="bi bi-lightning-charge"></i>
+                            </div>
+                            <div class="benefit-content">
+                                <h5>Instant Performance</h5>
+                                <p>Immediate torque delivery for superior acceleration</p>
+                            </div>
+                        </div>
+
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="bi bi-volume-off"></i>
+                            </div>
+                            <div class="benefit-content">
+                                <h5>Quiet Operation</h5>
+                                <p>Enjoy a peaceful, noise-free driving experience</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="benefits-image">
+                    <img src="https://images.unsplash.com/photo-1671785120538-c24cbe823ccc?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                         alt="Electric Vehicle Benefits" class="img-fluid rounded-3">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/landingPage.js" asp-append-version="true"></script>
+}

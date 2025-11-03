@@ -1,0 +1,243 @@
+@page
+@model EVDealerSales.Presentation.Pages.TestDrive.RegisterForCustomerModel
+@{
+    ViewData["Title"] = "Register Test Drive for Customer";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/testdrive.css" />
+}
+
+<div class="testdrive-container">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Header -->
+                <div class="testdrive-header">
+                    <div>
+                        <h1>
+                            <i class="fas fa-user-plus"></i>
+                            Register Test Drive for Walk-in Customer
+                        </h1>
+                        <p class="header-subtitle">
+                            Staff registration form for walk-in customers - automatically confirmed upon submission
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Info Alert -->
+                <div class="alert-testdrive info">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>Staff Registration:</strong> This form is for registering test drives for walk-in customers.
+                        The test drive will be automatically confirmed and assigned to you upon submission.
+                    </div>
+                </div>
+
+                <!-- Main Form Card -->
+                <div class="testdrive-card">
+                    <div class="testdrive-card-header" style="background: rgba(34, 197, 94, 0.1); border-bottom-color: rgba(34, 197, 94, 0.3); color: #22c55e;">
+                        <h3>
+                            <i class="fas fa-clipboard-check"></i>
+                            Registration Form
+                        </h3>
+                    </div>
+                    <div class="testdrive-card-body">
+                        <form method="post" class="form-testdrive">
+                            <div asp-validation-summary="ModelOnly" class="alert-testdrive error" role="alert"></div>
+
+                            <!-- Customer Information Section -->
+                            <div style="margin-bottom: 2rem;">
+                                <h5 style="color: #fff; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid #1a1a1a; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-user" style="color: #0070f3;"></i>
+                                    Customer Information
+                                </h5>
+
+                                <div class="form-group-testdrive">
+                                    <label asp-for="TestDrive.CustomerEmail" class="form-label-testdrive">
+                                        <i class="fas fa-envelope"></i> Customer Email <span style="color: #ef4444;">*</span>
+                                    </label>
+                                    <input asp-for="TestDrive.CustomerEmail" class="form-control-testdrive"
+                                           type="email" placeholder="customer@example.com" required>
+                                    <span asp-validation-for="TestDrive.CustomerEmail" class="text-danger"></span>
+                                    <small style="color: #888; font-size: 0.875rem; margin-top: 0.5rem; display: block;">
+                                        <i class="fas fa-info-circle"></i> The customer must be registered in the system. Please verify the email is correct.
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Vehicle Selection Section -->
+                            <div style="margin-bottom: 2rem;">
+                                <h5 style="color: #fff; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid #1a1a1a; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-car" style="color: #0070f3;"></i>
+                                    Vehicle Selection
+                                </h5>
+
+                                <div class="form-group-testdrive">
+                                    <label asp-for="TestDrive.VehicleId" class="form-label-testdrive">
+                                        <i class="fas fa-car-side"></i> Select Vehicle <span style="color: #ef4444;">*</span>
+                                    </label>
+                                    <select asp-for="TestDrive.VehicleId" asp-items="Model.VehicleList"
+                                            class="form-control-testdrive" required>
+                                        <option value="">-- Choose an electric vehicle --</option>
+                                    </select>
+                                    <span asp-validation-for="TestDrive.VehicleId" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Schedule Information Section -->
+                            <div style="margin-bottom: 2rem;">
+                                <h5 style="color: #fff; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid #1a1a1a; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-calendar-alt" style="color: #0070f3;"></i>
+                                    Schedule Information
+                                </h5>
+
+                                <div class="form-group-testdrive">
+                                    <label asp-for="TestDrive.ScheduledAt" class="form-label-testdrive">
+                                        <i class="fas fa-clock"></i> Scheduled Date & Time <span style="color: #ef4444;">*</span>
+                                    </label>
+                                    <input asp-for="TestDrive.ScheduledAt" class="form-control-testdrive"
+                                           type="datetime-local" required id="scheduledAt">
+                                    <span asp-validation-for="TestDrive.ScheduledAt" class="text-danger"></span>
+                                    <small style="color: #888; font-size: 0.875rem; margin-top: 0.5rem; display: block;">
+                                        <i class="fas fa-info-circle"></i> Duration: ~2 hours per test drive session
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Notes Section -->
+                            <div style="margin-bottom: 2rem;">
+                                <div class="form-group-testdrive">
+                                    <label asp-for="TestDrive.Notes" class="form-label-testdrive">
+                                        <i class="fas fa-sticky-note"></i> Notes (Optional)
+                                    </label>
+                                    <textarea asp-for="TestDrive.Notes" class="form-control-testdrive" rows="4"
+                                              placeholder="Any special notes, customer preferences, or requirements..."></textarea>
+                                    <span asp-validation-for="TestDrive.Notes" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Pre-Registration Checklist -->
+                            <div style="background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+                                <h6 style="color: #fff; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-check-square" style="color: #22c55e;"></i>
+                                    Pre-Registration Checklist
+                                </h6>
+                                <div style="display: grid; gap: 0.75rem;">
+                                    <div style="display: flex; align-items: start; gap: 0.75rem;">
+                                        <input type="checkbox" id="check1" required
+                                               style="width: 18px; height: 18px; margin-top: 0.125rem; cursor: pointer;">
+                                        <label for="check1" style="color: #ccc; font-size: 0.9375rem; cursor: pointer; flex: 1;">
+                                            Customer's driver's license has been verified
+                                        </label>
+                                    </div>
+                                    <div style="display: flex; align-items: start; gap: 0.75rem;">
+                                        <input type="checkbox" id="check2" required
+                                               style="width: 18px; height: 18px; margin-top: 0.125rem; cursor: pointer;">
+                                        <label for="check2" style="color: #ccc; font-size: 0.9375rem; cursor: pointer; flex: 1;">
+                                            Customer is registered in the system with this email
+                                        </label>
+                                    </div>
+                                    <div style="display: flex; align-items: start; gap: 0.75rem;">
+                                        <input type="checkbox" id="check3" required
+                                               style="width: 18px; height: 18px; margin-top: 0.125rem; cursor: pointer;">
+                                        <label for="check3" style="color: #ccc; font-size: 0.9375rem; cursor: pointer; flex: 1;">
+                                            Selected vehicle is available for the scheduled time
+                                        </label>
+                                    </div>
+                                    <div style="display: flex; align-items: start; gap: 0.75rem;">
+                                        <input type="checkbox" id="check4" required
+                                               style="width: 18px; height: 18px; margin-top: 0.125rem; cursor: pointer;">
+                                        <label for="check4" style="color: #ccc; font-size: 0.9375rem; cursor: pointer; flex: 1;">
+                                            Customer understands test drive duration is 2 hours
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div style="display: flex; gap: 0.75rem; justify-content: flex-end; padding-top: 1.5rem; border-top: 1px solid #1a1a1a;">
+                                <a asp-page="Index" class="btn-testdrive-secondary">
+                                    <i class="fas fa-times-circle"></i> Cancel
+                                </a>
+                                <button type="submit" class="btn-testdrive-success">
+                                    <i class="fas fa-check-circle"></i> Register & Confirm
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Additional Information Card -->
+                <div class="testdrive-card" style="margin-top: 1.5rem;">
+                    <div class="testdrive-card-header">
+                        <h3>
+                            <i class="fas fa-lightbulb"></i>
+                            Important Notes
+                        </h3>
+                    </div>
+                    <div class="testdrive-card-body">
+                        <ul style="color: #ccc; margin: 0; padding-left: 1.5rem; line-height: 1.8;">
+                            <li>Walk-in registrations are automatically <strong style="color: #3b82f6;">confirmed</strong> and assigned to the staff member who registers them</li>
+                            <li>The customer will receive an email notification with appointment details</li>
+                            <li>Ensure all safety protocols are explained to the customer before the test drive</li>
+                            <li>Vehicle must be inspected and fueled before the scheduled appointment</li>
+                            <li>Maximum duration for each test drive is 2 hours</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Set minimum date to current time
+        const now = new Date();
+        const minDate = now.toISOString().slice(0, 16);
+        document.getElementById('scheduledAt').min = minDate;
+
+        // Set default value to current time + 1 hour if not set
+        if (!document.getElementById('scheduledAt').value) {
+            now.setHours(now.getHours() + 1);
+            now.setMinutes(0, 0, 0);
+            document.getElementById('scheduledAt').value = now.toISOString().slice(0, 16);
+        }
+
+        // Form submission with loading state
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            // Validate all checkboxes are checked
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+
+            if (!allChecked) {
+                e.preventDefault();
+                alert('Please complete all checklist items before submitting.');
+                return false;
+            }
+
+            // Add loading state
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        });
+
+        // Checkbox styling enhancement
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const label = document.querySelector(`label[for="${this.id}"]`);
+                if (this.checked) {
+                    label.style.color = '#22c55e';
+                    label.style.textDecoration = 'line-through';
+                } else {
+                    label.style.color = '#ccc';
+                    label.style.textDecoration = 'none';
+                }
+            });
+        });
+    </script>
+}

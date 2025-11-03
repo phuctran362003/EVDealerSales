@@ -1,0 +1,534 @@
+﻿@page
+@model EVDealerSales.Presentation.Pages.Manager.ManageStaffModel
+@{
+    ViewData["Title"] = "Manage Staff";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/staff-management.css" />
+}
+
+<div class="staff-page-clean">
+    <div class="container">
+        <!-- Header -->
+        <div class="staff-header-clean">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                    <h1 class="staff-title-clean">
+                        <i class="bi bi-people"></i>
+                        Staff Management
+                    </h1>
+                    <p class="staff-subtitle-clean">
+                        Manage dealer staff members and their accounts
+                    </p>
+                </div>
+                <div>
+                    <button type="button" class="btn-clean btn-primary-clean" data-bs-toggle="modal" data-bs-target="#createStaffModal">
+                        <i class="bi bi-person-plus"></i>
+                        Add New Staff
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill"></i>
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <!-- Search and Filter Card -->
+        <div class="staff-card-clean">
+            <div class="staff-card-header-clean">
+                <h3 class="staff-card-title-clean">
+                    <i class="bi bi-funnel-fill"></i>
+                    Search & Filters
+                </h3>
+                <button class="btn-secondary-clean" type="button" style="padding: 0.5rem 0.75rem; border-radius: 6px;"
+                        data-bs-toggle="collapse" data-bs-target="#filterCollapse">
+                    <i class="bi bi-chevron-down"></i>
+                </button>
+            </div>
+            <div class="collapse show" id="filterCollapse">
+                <div class="staff-card-body-clean">
+                    <form method="get">
+                        <input type="hidden" name="pageNumber" value="1" />
+                        <input type="hidden" name="pageSize" asp-for="PageSize" />
+
+                        <!-- Search Bar -->
+                        <div class="search-bar-clean">
+                            <i class="bi bi-search search-icon-clean"></i>
+                            <input type="text" class="search-input-clean" name="searchTerm"
+                                   asp-for="SearchTerm"
+                                   placeholder="Search by name, email or phone...">
+                        </div>
+
+                        <!-- Filter Grid -->
+                        <div class="filter-grid-clean">
+                            <div class="filter-group-clean">
+                                <label class="filter-label-clean">
+                                    <i class="bi bi-calendar"></i>
+                                    From Date
+                                </label>
+                                <input type="date" class="filter-input-clean" name="fromDate" asp-for="FromDate">
+                            </div>
+                            <div class="filter-group-clean">
+                                <label class="filter-label-clean">
+                                    <i class="bi bi-calendar"></i>
+                                    To Date
+                                </label>
+                                <input type="date" class="filter-input-clean" name="toDate" asp-for="ToDate">
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="filter-actions-clean">
+                            <button type="submit" class="btn-clean btn-primary-clean">
+                                <i class="bi bi-search"></i> Apply Filters
+                            </button>
+                            <a asp-page="ManageStaff" class="btn-clean btn-secondary-clean">
+                                <i class="bi bi-x-circle"></i> Clear Filters
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Staff List Card -->
+        <div class="staff-card-clean">
+            <div class="staff-card-header-clean">
+                <h3 class="staff-card-title-clean">
+                    <i class="bi bi-people-fill"></i>
+                    Staff Members
+                </h3>
+                @if (Model.Staff != null && Model.Staff.Any())
+                {
+                    <span style="color: #888; font-size: 0.875rem; font-weight: 500;">
+                        @Model.Staff.TotalCount total
+                    </span>
+                }
+            </div>
+            <div class="staff-card-body-clean" style="padding: 0;">
+                @if (Model.Staff == null || !Model.Staff.Any())
+                {
+                    <div class="empty-state-clean">
+                        <div class="empty-icon-clean">
+                            <i class="bi bi-person-x"></i>
+                        </div>
+                        <h3 class="empty-title-clean">No Staff Found</h3>
+                        <p class="empty-description-clean">
+                            @if (!string.IsNullOrEmpty(Model.SearchTerm))
+                            {
+                                <span>Try adjusting your search criteria</span>
+                            }
+                            else
+                            {
+                                <span>No staff members have been added yet</span>
+                            }
+                        </p>
+                        <button type="button" class="btn-clean btn-primary-clean" style="margin-top: 1rem;" 
+                                data-bs-toggle="modal" data-bs-target="#createStaffModal">
+                            <i class="bi bi-person-plus"></i> Add First Staff
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <div style="padding: 1.5rem;">
+                        @foreach (var staff in Model.Staff)
+                        {
+                            <div style="background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; transition: all 0.2s ease;">
+                                <div style="display: grid; grid-template-columns: 2fr 1.5fr 1fr auto; gap: 1.5rem; align-items: center;">
+                                    <!-- Staff Info -->
+                                    <div class="user-cell-clean">
+                                        <div class="user-avatar-clean" style="width: 40px; height: 40px; font-size: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                            @staff.FullName.Substring(0, 1).ToUpper()
+                                        </div>
+                                        <div class="user-info-clean">
+                                            <div class="user-name-clean">@staff.FullName</div>
+                                            <div class="user-role-clean" style="font-size: 0.75rem;">
+                                                <i class="bi bi-shield-check"></i> Staff Member
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Contact Info -->
+                                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                                        <div style="color: #ccc; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+                                            <i class="bi bi-envelope" style="color: #888;"></i>
+                                            @staff.Email
+                                        </div>
+                                        <div style="color: #ccc; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+                                            <i class="bi bi-telephone" style="color: #888;"></i>
+                                            @staff.PhoneNumber
+                                        </div>
+                                    </div>
+
+                                    <!-- Created Date -->
+                                    <div class="date-cell-clean">
+                                        <span class="date-primary-clean">
+                                            @staff.CreatedAt.ToString("MMM dd, yyyy")
+                                        </span>
+                                        <span class="date-secondary-clean">
+                                            @staff.CreatedAt.ToString("hh:mm tt")
+                                        </span>
+                                    </div>
+
+                                    <!-- Actions -->
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <button type="button" class="btn-action-clean"
+                                                style="font-size: 0.75rem; padding: 0.4rem 0.75rem;"
+                                                onclick="editStaff('@staff.Id', '@staff.FullName', '@staff.Email', '@staff.PhoneNumber')"
+                                                title="Edit Staff">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button type="button" class="btn-action-clean btn-action-danger"
+                                                style="font-size: 0.75rem; padding: 0.4rem 0.75rem;"
+                                                onclick="deleteStaff('@staff.Id', '@staff.FullName')"
+                                                title="Delete Staff">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Pagination -->
+                    @if (Model.Staff.TotalPages > 1)
+                    {
+                        <div style="padding: 0 1.5rem 1.5rem 1.5rem;">
+                            <div class="pagination-clean">
+                                @if (Model.Staff.HasPrevious)
+                                {
+                                    <a class="page-btn-clean"
+                                       asp-page="ManageStaff"
+                                       asp-route-pageNumber="@(Model.PageNumber - 1)"
+                                       asp-route-pageSize="@Model.PageSize"
+                                       asp-route-searchTerm="@Model.SearchTerm"
+                                       asp-route-fromDate="@Model.FromDate"
+                                       asp-route-toDate="@Model.ToDate">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                }
+
+                                @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.Staff.TotalPages, Model.PageNumber + 2); i++)
+                                {
+                                    <a class="page-btn-clean @(Model.PageNumber == i ? "active" : "")"
+                                       asp-page="ManageStaff"
+                                       asp-route-pageNumber="@i"
+                                       asp-route-pageSize="@Model.PageSize"
+                                       asp-route-searchTerm="@Model.SearchTerm"
+                                       asp-route-fromDate="@Model.FromDate"
+                                       asp-route-toDate="@Model.ToDate">
+                                        @i
+                                    </a>
+                                }
+
+                                @if (Model.Staff.HasNext)
+                                {
+                                    <a class="page-btn-clean"
+                                       asp-page="ManageStaff"
+                                       asp-route-pageNumber="@(Model.PageNumber + 1)"
+                                       asp-route-pageSize="@Model.PageSize"
+                                       asp-route-searchTerm="@Model.SearchTerm"
+                                       asp-route-fromDate="@Model.FromDate"
+                                       asp-route-toDate="@Model.ToDate">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                }
+                            </div>
+
+                            <div class="pagination-info-clean">
+                                Showing @((Model.PageNumber - 1) * Model.PageSize + 1) to
+                                @Math.Min(Model.PageNumber * Model.PageSize, Model.Staff.TotalCount) of
+                                @Model.Staff.TotalCount staff members
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Staff Modal -->
+<div class="modal fade" id="createStaffModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content modal-clean">
+            <div class="modal-header-clean">
+                <h3 class="modal-title-clean">
+                    <i class="bi bi-person-plus"></i>
+                    Add New Staff
+                </h3>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="createStaffForm">
+                <div class="modal-body-clean">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="filter-group-clean">
+                            <label class="filter-label-clean">
+                                <i class="bi bi-person"></i>
+                                Full Name <span style="color: #ef4444;">*</span>
+                            </label>
+                            <input type="text" class="filter-input-clean" id="createFullName" required
+                                   placeholder="Enter full name">
+                        </div>
+                        <div class="filter-group-clean">
+                            <label class="filter-label-clean">
+                                <i class="bi bi-envelope"></i>
+                                Email <span style="color: #ef4444;">*</span>
+                            </label>
+                            <input type="email" class="filter-input-clean" id="createEmail" required
+                                   placeholder="Enter email address">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="filter-group-clean">
+                            <label class="filter-label-clean">
+                                <i class="bi bi-telephone"></i>
+                                Phone Number <span style="color: #ef4444;">*</span>
+                            </label>
+                            <input type="tel" class="filter-input-clean" id="createPhone" required
+                                   placeholder="Enter phone number">
+                        </div>
+                        <div class="filter-group-clean">
+                            <label class="filter-label-clean">
+                                <i class="bi bi-lock"></i>
+                                Password <span style="color: #ef4444;">*</span>
+                            </label>
+                            <input type="password" class="filter-input-clean" id="createPassword" required
+                                   placeholder="Min 6 characters">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer-clean">
+                    <button type="button" class="btn-clean btn-secondary-clean" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn-clean btn-success-clean">
+                        <i class="bi bi-save"></i> Create Staff
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Staff Modal -->
+<div class="modal fade" id="editStaffModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content modal-clean">
+            <div class="modal-header-clean">
+                <h3 class="modal-title-clean">
+                    <i class="bi bi-pencil-square"></i>
+                    Edit Staff
+                </h3>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editStaffForm">
+                <input type="hidden" id="editStaffId">
+                <div class="modal-body-clean">
+                    <div class="alert alert-info" style="margin-bottom: 1.5rem;">
+                        <i class="bi bi-info-circle"></i>
+                        Email cannot be changed. Leave password blank to keep current password.
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="filter-group-clean">
+                            <label class="filter-label-clean">
+                                <i class="bi bi-person"></i>
+                                Full Name <span style="color: #ef4444;">*</span>
+                            </label>
+                            <input type="text" class="filter-input-clean" id="editFullName" required>
+                        </div>
+                        <div class="filter-group-clean">
+                            <label class="filter-label-clean">
+                                <i class="bi bi-envelope"></i>
+                                Email
+                            </label>
+                            <input type="email" class="filter-input-clean" id="editEmail" disabled 
+                                   style="background: #0a0a0a; cursor: not-allowed;">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="filter-group-clean">
+                            <label class="filter-label-clean">
+                                <i class="bi bi-telephone"></i>
+                                Phone Number <span style="color: #ef4444;">*</span>
+                            </label>
+                            <input type="tel" class="filter-input-clean" id="editPhone" required>
+                        </div>
+                        <div class="filter-group-clean">
+                            <label class="filter-label-clean">
+                                <i class="bi bi-key"></i>
+                                New Password (Optional)
+                            </label>
+                            <input type="password" class="filter-input-clean" id="editPassword"
+                                   placeholder="Leave blank to keep current">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer-clean">
+                    <button type="button" class="btn-clean btn-secondary-clean" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn-clean btn-primary-clean">
+                        <i class="bi bi-save"></i> Update Staff
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Create Staff
+        document.getElementById('createStaffForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = {
+                fullName: document.getElementById('createFullName').value,
+                email: document.getElementById('createEmail').value,
+                phoneNumber: document.getElementById('createPhone').value,
+                password: document.getElementById('createPassword').value
+            };
+
+            try {
+                const response = await fetch('/Manager/ManageStaff?handler=Create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('createStaffModal'));
+                    modal.hide();
+                    alert(data.message);
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while creating staff');
+            }
+        });
+
+        // Edit Staff
+        function editStaff(id, fullName, email, phone) {
+            document.getElementById('editStaffId').value = id;
+            document.getElementById('editFullName').value = fullName;
+            document.getElementById('editEmail').value = email;
+            document.getElementById('editPhone').value = phone;
+            document.getElementById('editPassword').value = '';
+
+            const modal = new bootstrap.Modal(document.getElementById('editStaffModal'));
+            modal.show();
+        }
+
+        document.getElementById('editStaffForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = {
+                staffId: document.getElementById('editStaffId').value,
+                fullName: document.getElementById('editFullName').value,
+                phoneNumber: document.getElementById('editPhone').value,
+                newPassword: document.getElementById('editPassword').value || null
+            };
+
+            try {
+                const response = await fetch('/Manager/ManageStaff?handler=Update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editStaffModal'));
+                    modal.hide();
+                    alert(data.message);
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while updating staff');
+            }
+        });
+
+        // Delete Staff
+        async function deleteStaff(id, name) {
+            if (!confirm(`Are you sure you want to delete staff member "${name}"?\n\nThis action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/Manager/ManageStaff?handler=Delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify({ staffId: id })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(data.message);
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while deleting staff');
+            }
+        }
+
+        // Auto-hide alerts
+        setTimeout(function () {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 300);
+            });
+        }, 5000);
+
+        // Toggle filter collapse icon
+        document.querySelector('[data-bs-toggle="collapse"]')?.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            icon.classList.toggle('bi-chevron-down');
+            icon.classList.toggle('bi-chevron-up');
+        });
+    </script>
+}

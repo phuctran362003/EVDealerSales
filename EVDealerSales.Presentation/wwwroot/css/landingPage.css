@@ -1,0 +1,547 @@
+﻿/* Landing Page Styles */
+:root {
+    --primary-color: #0070f3;
+    --secondary-color: #1a1a1a;
+    --text-primary: #ffffff;
+    --text-secondary: #aaaaaa;
+    --text-muted: #666666;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+    .hero-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 30% 50%, rgba(0, 102, 255, 0.05) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(0, 102, 255, 0.08);
+    color: var(--primary-color);
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: 1px solid rgba(0, 102, 255, 0.15);
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+}
+
+.hero-description {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 500px;
+}
+
+.hero-actions .btn {
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 8px;
+}
+
+.hero-image-full {
+    height: 100vh;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.1s ease-out;
+    will-change: transform;
+}
+
+.hero-image-container,
+.hero-image-wrapper,
+.hero-main-image,
+.hero-image-overlay {
+    display: none;
+}
+
+/* Ensure hero content has proper padding and spacing */
+.hero-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Stats Section */
+.stats-section {
+    background: #0f0f0f;
+    border-top: 1px solid #2a2a2a;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.stat-card {
+    padding: 2rem 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    border-radius: 8px;
+}
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    /* Glow effect for stat cards */
+    .stat-card.glow-active::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        background: linear-gradient(45deg, transparent, var(--primary-color), transparent);
+        border-radius: 8px;
+        opacity: 0;
+        animation: glow-pulse 2s ease-in-out infinite;
+        z-index: -1;
+        filter: blur(10px);
+    }
+
+    .stat-card.glow-active::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 112, 243, 0.03);
+        border-radius: 8px;
+        z-index: -1;
+    }
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.stat-card:hover .stat-number {
+    color: #0088ff;
+}
+
+.stat-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.stat-description {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* Featured Vehicles Section */
+.featured-vehicles {
+    padding: 5rem 0;
+    background: #0a0a0a;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.section-description {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Vehicle Card with 3D Tilt Effect */
+.vehicle-card {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease, transform 0.1s ease-out;
+    height: 100%;
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+    .vehicle-card:hover {
+        box-shadow: 0 20px 40px rgba(0, 102, 255, 0.15);
+        border-color: var(--primary-color);
+    }
+
+.vehicle-image {
+    position: relative;
+    overflow: hidden;
+}
+
+    .vehicle-image img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+.vehicle-card:hover .vehicle-image img {
+    transform: scale(1.05);
+}
+
+.vehicle-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.vehicle-info {
+    padding: 1.5rem;
+}
+
+.vehicle-name {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.vehicle-description {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.vehicle-specs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.spec-item {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+}
+
+.vehicle-price {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+/* Benefits Section */
+.benefits-section {
+    background: #0f0f0f;
+    padding: 5rem 0;
+}
+
+.benefit-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.benefit-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+    .benefit-item:hover {
+        background: rgba(0, 112, 243, 0.03);
+    }
+
+    /* Glow effect for benefit items */
+    .benefit-item.glow-active::before {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+        border-radius: 8px;
+        opacity: 0.3;
+        animation: glow-slide 2s ease-in-out infinite;
+        z-index: -1;
+        filter: blur(8px);
+    }
+
+.benefit-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(0, 102, 255, 0.06);
+    border: 1px solid rgba(0, 102, 255, 0.12);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.benefit-item:hover .benefit-icon {
+    background: rgba(0, 102, 255, 0.12);
+    border-color: rgba(0, 102, 255, 0.25);
+    transform: scale(1.1) rotate(5deg);
+}
+
+.benefit-icon i {
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    transition: color 0.3s ease;
+}
+
+.benefit-item:hover .benefit-icon i {
+    color: #0088ff;
+}
+
+.benefit-content h5 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.benefit-content p {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.benefits-image img {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    transition: transform 0.1s ease-out;
+    will-change: transform;
+}
+
+/* CTA Section */
+.cta-section {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    padding: 5rem 0;
+    text-align: center;
+    border-top: 1px solid #333;
+}
+
+.cta-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #f0f0f0;
+    margin-bottom: 1rem;
+}
+
+.cta-description {
+    font-size: 1.2rem;
+    color: rgba(240, 240, 240, 0.8);
+    max-width: 600px;
+    margin: 0 auto 2rem;
+}
+
+.cta-actions .btn {
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 8px;
+}
+
+.btn-outline-light {
+    border: 2px solid rgba(240, 240, 240, 0.3);
+    color: #f0f0f0;
+    background: transparent;
+}
+
+    .btn-outline-light:hover {
+        background: rgba(240, 240, 240, 0.1);
+        border-color: #f0f0f0;
+        color: #f0f0f0;
+    }
+
+/* ============================================
+   SCROLL ANIMATIONS
+   ============================================ */
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+    .animate-on-scroll.animate-in {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+/* ============================================
+   RIPPLE EFFECT FOR BUTTONS
+   ============================================ */
+.btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(0);
+    animation: ripple-animation 0.6s ease-out;
+    pointer-events: none;
+}
+
+@keyframes ripple-animation {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* ============================================
+   GLOW ANIMATIONS
+   ============================================ */
+@keyframes glow-pulse {
+    0%, 100% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes glow-slide {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* ============================================
+   ACCESSIBILITY: REDUCED MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .hero-image,
+    .benefits-image img {
+        transform: none !important;
+    }
+}
+
+/* Responsive Design for Landing Page */
+@media (max-width: 991.98px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .hero-description {
+        font-size: 1.1rem;
+    }
+
+    .hero-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+        .hero-actions .btn {
+            width: 100%;
+        }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .cta-title {
+        font-size: 2rem;
+    }
+
+    .benefit-list {
+        gap: 1.5rem;
+    }
+
+    .hero-image-full {
+        height: 50vh;
+        min-height: 400px;
+    }
+
+    .hero-content {
+        padding: 3rem 2rem !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+    }
+
+    .vehicle-specs {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .cta-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+        .cta-actions .btn {
+            width: 100%;
+        }
+
+    /* Mobile adjustments for hero image */
+    .hero-image-full {
+        height: 40vh;
+        min-height: 300px;
+    }
+
+    .hero-content {
+        padding: 2rem 1.5rem !important;
+    }
+
+    /* Disable 3D tilt on mobile */
+    .vehicle-card {
+        transform: none !important;
+    }
+}

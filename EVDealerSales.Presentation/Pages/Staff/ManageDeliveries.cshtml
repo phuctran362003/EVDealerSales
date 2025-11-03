@@ -1,0 +1,580 @@
+﻿@page
+@using EVDealerSales.BusinessObject.Enums
+@model EVDealerSales.Presentation.Pages.Staff.ManageDeliveriesModel
+@{
+    ViewData["Title"] = "Manage Deliveries";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/staff-management.css" />
+}
+
+<div class="staff-page-clean">
+    <div class="container">
+        <!-- Header -->
+        <div class="staff-header-clean">
+            <h1 class="staff-title-clean">
+                <i class="bi bi-truck"></i>
+                Delivery Management
+            </h1>
+            <p class="staff-subtitle-clean">
+                Manage and track all order deliveries
+            </p>
+        </div>
+
+        <!-- Alerts -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill"></i>
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <!-- Search and Filter Card -->
+        <div class="staff-card-clean">
+            <div class="staff-card-header-clean">
+                <h3 class="staff-card-title-clean">
+                    <i class="bi bi-funnel-fill"></i>
+                    Search & Filters
+                </h3>
+                <button class="btn-secondary-clean" type="button" style="padding: 0.5rem 0.75rem; border-radius: 6px;"
+                        data-bs-toggle="collapse" data-bs-target="#filterCollapse">
+                    <i class="bi bi-chevron-down"></i>
+                </button>
+            </div>
+            <div class="collapse show" id="filterCollapse">
+                <div class="staff-card-body-clean">
+                    <form method="get">
+                        <input type="hidden" name="pageNumber" value="1" />
+                        <input type="hidden" name="pageSize" asp-for="PageSize" />
+
+                        <!-- Search Bar -->
+                        <div class="search-bar-clean">
+                            <i class="bi bi-search search-icon-clean"></i>
+                            <input type="text" class="search-input-clean" name="searchTerm"
+                                   asp-for="SearchTerm"
+                                   placeholder="Search by order number, customer name or email...">
+                        </div>
+
+                        <!-- Filter Grid -->
+                        <div class="filter-grid-clean">
+                            <div class="filter-group-clean">
+                                <label class="filter-label-clean">
+                                    <i class="bi bi-info-circle"></i>
+                                    Delivery Status
+                                </label>
+                                <select class="filter-input-clean" name="status" asp-for="Status">
+                                    <option value="">All Status</option>
+                                    <option value="@((int)DeliveryStatus.Pending)">Pending</option>
+                                    <option value="@((int)DeliveryStatus.Scheduled)">Scheduled</option>
+                                    <option value="@((int)DeliveryStatus.InTransit)">In Transit</option>
+                                    <option value="@((int)DeliveryStatus.Delivered)">Delivered</option>
+                                    <option value="@((int)DeliveryStatus.Cancelled)">Cancelled</option>
+                                </select>
+                            </div>
+                            <div class="filter-group-clean">
+                                <label class="filter-label-clean">
+                                    <i class="bi bi-calendar"></i>
+                                    From Date
+                                </label>
+                                <input type="date" class="filter-input-clean" name="fromDate" asp-for="FromDate">
+                            </div>
+                            <div class="filter-group-clean">
+                                <label class="filter-label-clean">
+                                    <i class="bi bi-calendar"></i>
+                                    To Date
+                                </label>
+                                <input type="date" class="filter-input-clean" name="toDate" asp-for="ToDate">
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="filter-actions-clean">
+                            <button type="submit" class="btn-clean btn-primary-clean">
+                                <i class="bi bi-search"></i> Apply Filters
+                            </button>
+                            <a asp-page="ManageDeliveries" class="btn-clean btn-secondary-clean">
+                                <i class="bi bi-x-circle"></i> Clear Filters
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deliveries List Card -->
+        <div class="staff-card-clean">
+            <div class="staff-card-header-clean">
+                <h3 class="staff-card-title-clean">
+                    <i class="bi bi-list-ul"></i>
+                    Deliveries
+                </h3>
+                @if (Model.Deliveries != null && Model.Deliveries.Any())
+                {
+                    <span style="color: #888; font-size: 0.875rem; font-weight: 500;">
+                        @Model.Deliveries.TotalCount total
+                    </span>
+                }
+            </div>
+            <div class="staff-card-body-clean" style="padding: 0;">
+                @if (Model.Deliveries == null || !Model.Deliveries.Any())
+                {
+                    <div class="empty-state-clean">
+                        <div class="empty-icon-clean">
+                            <i class="bi bi-inbox"></i>
+                        </div>
+                        <h3 class="empty-title-clean">No Deliveries Found</h3>
+                        <p class="empty-description-clean">
+                            @if (!string.IsNullOrEmpty(Model.SearchTerm) || Model.Status.HasValue)
+                            {
+                                <span>Try adjusting your search criteria or filters</span>
+                            }
+                            else
+                            {
+                                <span>No deliveries have been scheduled yet</span>
+                            }
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <div style="padding: 1.5rem;">
+                        @foreach (var delivery in Model.Deliveries)
+                        {
+                            <div style="background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; transition: all 0.2s ease;">
+                                <!-- Top Row: Order Number, Status, Dates -->
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px solid #1a1a1a;">
+                                    <div style="display: flex; align-items: center; gap: 1rem;">
+                                        <span class="order-number-badge">@delivery.OrderNumber</span>
+                                        @switch (delivery.Status)
+                                        {
+                                            case DeliveryStatus.Pending:
+                                                <span class="badge-clean badge-pending" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">
+                                                    <i class="bi bi-clock"></i> Pending
+                                                </span>
+                                                break;
+                                            case DeliveryStatus.Scheduled:
+                                                <span class="badge-clean badge-info" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">
+                                                    <i class="bi bi-calendar-check"></i> Scheduled
+                                                </span>
+                                                break;
+                                            case DeliveryStatus.InTransit:
+                                                <span class="badge-clean badge-info" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">
+                                                    <i class="bi bi-truck"></i> In Transit
+                                                </span>
+                                                break;
+                                            case DeliveryStatus.Delivered:
+                                                <span class="badge-clean badge-success" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">
+                                                    <i class="bi bi-check-circle"></i> Delivered
+                                                </span>
+                                                break;
+                                            case DeliveryStatus.Cancelled:
+                                                <span class="badge-clean badge-danger" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">
+                                                    <i class="bi bi-x-circle"></i> Cancelled
+                                                </span>
+                                                break;
+                                        }
+                                    </div>
+                                    <div style="display: flex; gap: 1rem; font-size: 0.75rem;">
+                                        @if (delivery.PlannedDate.HasValue)
+                                        {
+                                            <div style="color: #888;">
+                                                <i class="bi bi-calendar-check"></i> Planned: 
+                                                <span style="color: #ccc;">@delivery.PlannedDate.Value.ToString("MMM dd, yyyy")</span>
+                                            </div>
+                                        }
+                                        @if (delivery.ActualDate.HasValue)
+                                        {
+                                            <div style="color: #888;">
+                                                <i class="bi bi-check-circle"></i> Delivered: 
+                                                <span style="color: #22c55e;">@delivery.ActualDate.Value.ToString("MMM dd, yyyy")</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+
+                                <!-- Main Content Row: Customer, Vehicle, Address, Actions -->
+                                <div style="display: grid; grid-template-columns: 2fr 3fr auto; gap: 1.5rem; align-items: start;">
+                                    <!-- Customer Info -->
+                                    <div class="user-cell-clean">
+                                        <div class="user-avatar-clean" style="width: 36px; height: 36px; font-size: 0.9rem;">
+                                            @delivery.CustomerName.Substring(0, 1).ToUpper()
+                                        </div>
+                                        <div class="user-info-clean">
+                                            <div class="user-name-clean" style="font-size: 0.9rem;">@delivery.CustomerName</div>
+                                            <div class="user-role-clean" style="font-size: 0.75rem;">@delivery.CustomerEmail</div>
+                                            @if (!string.IsNullOrEmpty(delivery.CustomerPhone))
+                                            {
+                                                <div class="user-role-clean" style="font-size: 0.7rem;">
+                                                    <i class="bi bi-telephone"></i> @delivery.CustomerPhone
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <!-- Vehicle & Address (Inline, Compact) -->
+                                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                        <!-- Vehicle - Inline with Icon -->
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(0, 112, 243, 0.08); border-left: 3px solid #0070f3; border-radius: 4px;">
+                                            <i class="bi bi-car-front-fill" style="color: #0070f3; font-size: 1rem; flex-shrink: 0;"></i>
+                                            <div>
+                                                <div style="font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; line-height: 1;">Vehicle</div>
+                                                <div style="color: #fff; font-weight: 600; font-size: 0.85rem; margin-top: 0.125rem;">@delivery.VehicleInfo</div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Address - Inline with Icon -->
+                                        @if (!string.IsNullOrEmpty(delivery.ShippingAddress))
+                                        {
+                                            <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(34, 197, 94, 0.08); border-left: 3px solid #22c55e; border-radius: 4px;">
+                                                <i class="bi bi-geo-alt-fill" style="color: #22c55e; font-size: 1rem; flex-shrink: 0;"></i>
+                                                <div>
+                                                    <div style="font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; line-height: 1;">Delivery To</div>
+                                                    <div style="color: #fff; font-size: 0.8rem; margin-top: 0.125rem; line-height: 1.3;">@delivery.ShippingAddress</div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <!-- Actions -->
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end;">
+                                        @* View Order Button - Always show first *@
+                                        <a asp-page="/Order/OrderDetail" asp-route-id="@delivery.OrderId"
+                                           class="btn-action-clean" 
+                                           style="font-size: 0.75rem; padding: 0.4rem 0.75rem;"
+                                           title="View Order Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        @* Pending Status - Show Confirm & Cancel *@
+                                        @if (delivery.Status == DeliveryStatus.Pending)
+                                        {
+                                            <button type="button" class="btn-action-clean btn-action-success"
+                                                    style="font-size: 0.75rem; padding: 0.4rem 0.75rem;"
+                                                    onclick="showConfirmModal('@delivery.Id', '@delivery.OrderNumber')"
+                                                    title="Confirm and Schedule Delivery">
+                                                <i class="bi bi-check-circle"></i>
+                                            </button>
+                                            <button type="button" class="btn-action-clean btn-action-danger"
+                                                    style="font-size: 0.75rem; padding: 0.4rem 0.75rem;"
+                                                    onclick="cancelDelivery('@delivery.Id')"
+                                                    title="Cancel Delivery Request">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        }
+
+                                        @* Scheduled Status - Show Ship & Cancel *@
+                                        @if (delivery.Status == DeliveryStatus.Scheduled)
+                                        {
+                                            <button type="button" class="btn-action-clean"
+                                                    style="font-size: 0.75rem; padding: 0.4rem 0.75rem;"
+                                                    onclick="updateStatus('@delivery.Id', '@((int)DeliveryStatus.InTransit)', 'In Transit')"
+                                                    title="Mark as In Transit">
+                                                <i class="bi bi-truck"></i>
+                                            </button>
+                                            <button type="button" class="btn-action-clean btn-action-danger"
+                                                    style="font-size: 0.75rem; padding: 0.4rem 0.75rem;"
+                                                    onclick="cancelDelivery('@delivery.Id')"
+                                                    title="Cancel Delivery">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        }
+
+                                        @* InTransit Status - Show Deliver *@
+                                        @if (delivery.Status == DeliveryStatus.InTransit)
+                                        {
+                                            <button type="button" class="btn-action-clean btn-action-success"
+                                                    style="font-size: 0.75rem; padding: 0.4rem 0.75rem;"
+                                                    onclick="updateStatus('@delivery.Id', '@((int)DeliveryStatus.Delivered)', 'Delivered')"
+                                                    title="Mark as Delivered">
+                                                <i class="bi bi-check-circle"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Pagination -->
+                    @if (Model.Deliveries.TotalPages > 1)
+                    {
+                        <div style="padding: 0 1.5rem 1.5rem 1.5rem;">
+                            <div class="pagination-clean">
+                                @if (Model.Deliveries.HasPrevious)
+                                {
+                                    <a class="page-btn-clean"
+                                       asp-page="ManageDeliveries"
+                                       asp-route-pageNumber="@(Model.PageNumber - 1)"
+                                       asp-route-pageSize="@Model.PageSize"
+                                       asp-route-searchTerm="@Model.SearchTerm"
+                                       asp-route-status="@Model.Status"
+                                       asp-route-fromDate="@Model.FromDate"
+                                       asp-route-toDate="@Model.ToDate">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                }
+
+                                @for (int i = Math.Max(1, Model.PageNumber - 2); i <= Math.Min(Model.Deliveries.TotalPages, Model.PageNumber + 2); i++)
+                                {
+                                    <a class="page-btn-clean @(Model.PageNumber == i ? "active" : "")"
+                                       asp-page="ManageDeliveries"
+                                       asp-route-pageNumber="@i"
+                                       asp-route-pageSize="@Model.PageSize"
+                                       asp-route-searchTerm="@Model.SearchTerm"
+                                       asp-route-status="@Model.Status"
+                                       asp-route-fromDate="@Model.FromDate"
+                                       asp-route-toDate="@Model.ToDate">
+                                        @i
+                                    </a>
+                                }
+
+                                @if (Model.Deliveries.HasNext)
+                                {
+                                    <a class="page-btn-clean"
+                                       asp-page="ManageDeliveries"
+                                       asp-route-pageNumber="@(Model.PageNumber + 1)"
+                                       asp-route-pageSize="@Model.PageSize"
+                                       asp-route-searchTerm="@Model.SearchTerm"
+                                       asp-route-status="@Model.Status"
+                                       asp-route-fromDate="@Model.FromDate"
+                                       asp-route-toDate="@Model.ToDate">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                }
+                            </div>
+
+                            <div class="pagination-info-clean">
+                                Showing @((Model.PageNumber - 1) * Model.PageSize + 1) to
+                                @Math.Min(Model.PageNumber * Model.PageSize, Model.Deliveries.TotalCount) of
+                                @Model.Deliveries.TotalCount deliveries
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Confirm Delivery Modal *@
+<div class="modal fade" id="confirmDeliveryModal" tabindex="-1" aria-labelledby="confirmDeliveryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content modal-clean">
+            <div class="modal-header-clean">
+                <h5 class="modal-title-clean" id="confirmDeliveryModalLabel">
+                    <i class="bi bi-check-circle"></i> Confirm Delivery
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+            </div>
+            <form id="confirmDeliveryForm">
+                <input type="hidden" id="confirmDeliveryId" />
+                <div class="modal-body-clean">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        You are confirming delivery for Order <strong id="confirmOrderNumber"></strong>
+                    </div>
+
+                    <div class="info-card-clean">
+                        <div class="info-item-clean">
+                            <label for="plannedDate" class="info-label-clean">
+                                <i class="bi bi-calendar-check"></i> Planned Delivery Date <span style="color: #ef4444;">*</span>
+                            </label>
+                            <input type="datetime-local" 
+                                   id="plannedDate" 
+                                   class="filter-input-clean" 
+                                   required 
+                                   style="margin-top: 0.5rem;" />
+                            <div style="font-size: 0.75rem; color: #888; margin-top: 0.25rem;">
+                                Select the planned date and time for delivery
+                            </div>
+                        </div>
+
+                        <div class="info-item-clean">
+                            <label for="staffNotes" class="info-label-clean">
+                                <i class="bi bi-chat-left-text"></i> Staff Notes (Optional)
+                            </label>
+                            <textarea id="staffNotes" 
+                                      class="filter-input-clean" 
+                                      rows="3"
+                                      style="margin-top: 0.5rem; resize: vertical;"
+                                      placeholder="Add any notes for the delivery (e.g., delivery instructions, contact time)"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer-clean">
+                    <button type="button" class="btn-clean btn-secondary-clean" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn-clean btn-success-clean" id="confirmDeliveryBtn">
+                        <i class="bi bi-check-circle"></i> Confirm Delivery
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let confirmModal;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            confirmModal = new bootstrap.Modal(document.getElementById('confirmDeliveryModal'));
+
+            // Setup confirm form handler
+            document.getElementById('confirmDeliveryForm')?.addEventListener('submit', handleConfirmDelivery);
+        });
+
+        function showConfirmModal(deliveryId, orderNumber) {
+            document.getElementById('confirmDeliveryId').value = deliveryId;
+            document.getElementById('confirmOrderNumber').textContent = orderNumber;
+            
+            // Set default planned date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(9, 0, 0, 0);
+            document.getElementById('plannedDate').value = tomorrow.toISOString().slice(0, 16);
+            
+            confirmModal.show();
+        }
+
+        async function handleConfirmDelivery(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('confirmDeliveryBtn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Confirming...';
+            
+            const deliveryId = document.getElementById('confirmDeliveryId').value;
+            const plannedDate = document.getElementById('plannedDate').value;
+            const staffNotes = document.getElementById('staffNotes').value;
+            
+            try {
+                const response = await fetch('/Staff/ManageDeliveries?handler=Confirm', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify({
+                        deliveryId: deliveryId,
+                        plannedDate: plannedDate,
+                        staffNotes: staffNotes
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    confirmModal.hide();
+                    alert('Delivery confirmed and scheduled successfully!');
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + (data.message || 'Failed to confirm delivery'));
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while confirming delivery');
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        async function updateStatus(deliveryId, status, statusName) {
+            if (!confirm(`Are you sure you want to mark this delivery as ${statusName}?`)) {
+                return;
+            }
+            
+            try {
+                const actualDate = status == '@((int)DeliveryStatus.Delivered)' ? new Date().toISOString() : null;
+                
+                const response = await fetch('/Staff/ManageDeliveries?handler=UpdateStatus', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify({
+                        deliveryId: deliveryId,
+                        status: parseInt(status),
+                        actualDate: actualDate
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Delivery status updated successfully!');
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + (data.message || 'Failed to update status'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while updating delivery status');
+            }
+        }
+
+        async function cancelDelivery(deliveryId) {
+            if (!confirm('Are you sure you want to cancel this delivery? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/Staff/ManageDeliveries?handler=Cancel', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify({
+                        deliveryId: deliveryId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Delivery cancelled successfully');
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + (data.message || 'Failed to cancel delivery'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while cancelling delivery');
+            }
+        }
+
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function () {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 300);
+            });
+        }, 5000);
+
+        // Toggle filter collapse icon
+        document.querySelector('[data-bs-toggle="collapse"]')?.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            icon.classList.toggle('bi-chevron-down');
+            icon.classList.toggle('bi-chevron-up');
+        });
+    </script>
+}

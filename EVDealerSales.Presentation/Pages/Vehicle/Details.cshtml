@@ -1,0 +1,258 @@
+﻿@page "{id:guid}"
+@using EVDealerSales.BusinessObject.DTOs.VehicleDTOs
+@model EVDealerSales.Presentation.Pages.Vehicle.DetailsModel
+@{
+    ViewData["Title"] = $"{Model.Vehicle?.ModelName} {Model.Vehicle?.TrimName} - Details" ?? "Vehicle Details";
+}
+
+@section Styles {
+    <head>
+        <link rel="stylesheet" href="~/css/vehicle.css" />
+    </head>
+}
+
+    <div class="employee-container">
+        <div class="container-fluid">
+            <div class="employee-header">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h1>
+                            <i class="fas fa-car-side"></i>
+                            Vehicle Details
+                        </h1>
+                        <p style="color: #666; margin: 0.5rem 0 0 0; font-size: 0.875rem;">
+                            Complete information and specifications
+                        </p>
+                    </div>
+                    <div class="header-actions">
+                        <a asp-page="./Edit" asp-route-id="@Model.Vehicle?.Id" class="btn-modern">
+                            <i class="fas fa-edit"></i>
+                            Edit Vehicle
+                        </a>
+                        <a asp-page="./Index" class="btn-modern-secondary">
+                            <i class="fas fa-arrow-left"></i>
+                            Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="employee-card">
+                <div class="employee-card-body">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert-modern success">
+                            <i class="fas fa-check-circle"></i>
+                            @TempData["SuccessMessage"]
+                        </div>
+                    }
+
+                    @if (Model.Vehicle == null)
+                    {
+                        <div class="alert-modern error">Vehicle details could not be loaded.</div>
+                    }
+                    else
+                    {
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                            <div>
+                                <div class="vehicle-detail-image">
+                                    <img src="@Model.Vehicle.ImageUrl" alt="@Model.Vehicle.ModelName @Model.Vehicle.TrimName" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <div style="margin-bottom: 1.5rem;">
+                                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                                        <h2 style="color: #fff; font-size: 1.75rem; margin: 0;">
+                                            @Model.Vehicle.ModelName @Model.Vehicle.TrimName
+                                        </h2>
+                                        <span class="status-badge @(Model.Vehicle.IsActive ? "active" : "inactive")">
+                                            @(Model.Vehicle.IsActive ? "Active" : "Inactive")
+                                        </span>
+                                    </div>
+                                    <div style="color: #666; font-size: 0.875rem;">
+                                        Model Year: @Model.Vehicle.ModelYear
+                                    </div>
+                                </div>
+
+                                <div style="background: linear-gradient(135deg, #0070f3 0%, #00d4aa 100%); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                                    <div style="color: rgba(255,255,255,0.8); font-size: 0.875rem; margin-bottom: 0.25rem;">
+                                        Base Price
+                                    </div>
+                                    <div style="color: #fff; font-size: 2rem; font-weight: 600;">
+                                        $@Model.Vehicle.BasePrice.ToString("N0")
+                                    </div>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                                    <div style="background: #000; border: 1px solid #333; border-radius: 8px; padding: 1rem;">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                            <i class="fas fa-battery-full" style="color: #0070f3; font-size: 1.25rem;"></i>
+                                            <div style="color: #666; font-size: 0.75rem;">Battery</div>
+                                        </div>
+                                        <div style="color: #fff; font-size: 1.25rem; font-weight: 500;">
+                                            @Model.Vehicle.BatteryCapacity kWh
+                                        </div>
+                                    </div>
+
+                                    <div style="background: #000; border: 1px solid #333; border-radius: 8px; padding: 1rem;">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                            <i class="fas fa-road" style="color: #00d4aa; font-size: 1.25rem;"></i>
+                                            <div style="color: #666; font-size: 0.75rem;">Range</div>
+                                        </div>
+                                        <div style="color: #fff; font-size: 1.25rem; font-weight: 500;">
+                                            @Model.Vehicle.RangeKM km
+                                        </div>
+                                    </div>
+
+                                    <div style="background: #000; border: 1px solid #333; border-radius: 8px; padding: 1rem;">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                            <i class="fas fa-charging-station" style="color: #ff6b35; font-size: 1.25rem;"></i>
+                                            <div style="color: #666; font-size: 0.75rem;">Charging Time</div>
+                                        </div>
+                                        <div style="color: #fff; font-size: 1.25rem; font-weight: 500;">
+                                            @Model.Vehicle.ChargingTime min
+                                        </div>
+                                    </div>
+
+                                    <div style="background: #000; border: 1px solid #333; border-radius: 8px; padding: 1rem;">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                            <i class="fas fa-tachometer-alt" style="color: #ff6b35; font-size: 1.25rem;"></i>
+                                            <div style="color: #666; font-size: 0.75rem;">Top Speed</div>
+                                        </div>
+                                        <div style="color: #fff; font-size: 1.25rem; font-weight: 500;">
+                                            @Model.Vehicle.TopSpeed km/h
+                                        </div>
+                                    </div>
+
+                                    <div style="background: #000; border: 1px solid #333; border-radius: 8px; padding: 1rem;">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                            <i class="fas fa-warehouse" style="color: #00d4aa; font-size: 1.25rem;"></i>
+                                            <div style="color: #666; font-size: 0.75rem;">Stock Available</div>
+                                        </div>
+                                        <div style="color: #fff; font-size: 1.25rem; font-weight: 500;">
+                                            @Model.Vehicle.Stock units
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="border-top: 1px solid #333; padding-top: 1.5rem; grid-column: span 2;">
+                                <h3 style="color: #ccc; margin-bottom: 1rem; font-size: 1rem; font-weight: 500;">
+                                    Vehicle Information
+                                </h3>
+
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+                                    <div>
+                                        <div style="color: #666; font-size: 0.75rem; margin-bottom: 0.25rem;">Vehicle ID</div>
+                                        <div style="color: #ccc; font-size: 0.875rem; font-family: monospace;">@Model.Vehicle.Id</div>
+                                    </div>
+                                    <div>
+                                        <div style="color: #666; font-size: 0.75rem; margin-bottom: 0.25rem;">Model Name</div>
+                                        <div style="color: #ccc; font-size: 0.875rem;">@Model.Vehicle.ModelName</div>
+                                    </div>
+                                    <div>
+                                        <div style="color: #666; font-size: 0.75rem; margin-bottom: 0.25rem;">Trim Level</div>
+                                        <div style="color: #ccc; font-size: 0.875rem;">@Model.Vehicle.TrimName</div>
+                                    </div>
+                                    <div>
+                                        <div style="color: #666; font-size: 0.75rem; margin-bottom: 0.25rem;">Model Year</div>
+                                        <div style="color: #ccc; font-size: 0.875rem;">@Model.Vehicle.ModelYear</div>
+                                    </div>
+                                    <div>
+                                        <div style="color: #666; font-size: 0.75rem; margin-bottom: 0.25rem;">Status</div>
+                                        <div style="color: #ccc; font-size: 0.875rem;">@(Model.Vehicle.IsActive ? "Active - Available for Sale" : "Inactive - Not Available")</div>
+                                    </div>
+                                    <div>
+                                        <div style="color: #666; font-size: 0.75rem; margin-bottom: 0.25rem;">Image URL</div>
+                                        <div style="color: #0070f3; font-size: 0.75rem; word-break: break-all;">
+                                            <a href="@Model.Vehicle.ImageUrl" target="_blank" style="color: #0070f3; text-decoration: none;">
+                                                View Image <i class="fas fa-external-link-alt" style="font-size: 0.625rem;"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="clear: both; padding-top: 1.5rem; border-top: 1px solid #333; margin-top: 1.5rem; text-align: right;">
+                            <button type="button"
+                                    class="btn-modern-danger"
+                                    onclick="showDeleteModal('@Model.Vehicle.Id', '@Model.Vehicle.ModelName @Model.Vehicle.TrimName')">
+                                <i class="fas fa-trash"></i>
+                                Delete Vehicle
+                            </button>
+                            <a asp-page="./Edit" asp-route-id="@Model.Vehicle.Id" class="btn-modern">
+                                <i class="fas fa-edit"></i>
+                                Edit Vehicle
+                            </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="deleteModal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Confirm Delete</h3>
+                <button class="modal-close" onclick="hideDeleteModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div style="background: rgba(238, 0, 0, 0.1); border: 1px solid #e00; border-radius: 6px; padding: 0.75rem; margin-bottom: 1rem;">
+                    <div style="color: #e00; font-weight: 500; margin-bottom: 0.25rem; font-size: 0.875rem;">
+                        <i class="fas fa-exclamation-triangle"></i> Warning
+                    </div>
+                    <div style="color: #ccc; font-size: 0.75rem;">
+                        This action cannot be undone. The vehicle will be permanently removed from the system.
+                    </div>
+                </div>
+
+                <p id="deleteMessage" style="margin-bottom: 1rem; color: #ccc; font-size: 0.875rem;"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modern-secondary" onclick="hideDeleteModal()">Cancel</button>
+
+                <form id="deleteForm" method="post" asp-page-handler="Delete" style="display: inline;">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteVehicleId" />
+                    <button type="submit" class="btn-modern-danger">
+                        <i class="fas fa-trash"></i>
+                        Delete Vehicle
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+@section Scripts {
+        <script>
+            function showDeleteModal(vehicleId, vehicleName) {
+                const modal = document.getElementById('deleteModal');
+                const form = document.getElementById('deleteForm');
+                const message = document.getElementById('deleteMessage');
+                const hiddenId = document.getElementById('deleteVehicleId');
+
+                hiddenId.value = vehicleId;
+                message.innerHTML = `Are you sure you want to delete <strong style="color: #0070f3;">${vehicleName}</strong>?`;
+
+                modal.style.display = 'flex';
+            }
+
+            function hideDeleteModal() {
+                document.getElementById('deleteModal').style.display = 'none';
+            }
+
+            document.getElementById('deleteModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    hideDeleteModal();
+                }
+            });
+
+            setTimeout(function () {
+                const alerts = document.querySelectorAll('.alert-modern');
+                alerts.forEach(alert => alert.style.display = 'none');
+            }, 5000);
+        </script>
+}

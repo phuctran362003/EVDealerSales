@@ -1,0 +1,21 @@
+# This is a generated file. Not intended for manual editing.
+services:
+  evdealersales.presentation:
+    build:
+      context: "D:\\FPT\\8_Semester\\PRN232\\asm\\EVDealerSales"
+      dockerfile: "EVDealerSales.Presentation/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/EVDealerSales.Presentation.dll"
+    environment:
+      ASPNETCORE_STATICWEBASSETS: "/app/bin/Debug/net8.0/EVDealerSales.Presentation.staticwebassets.runtime.CT.json"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "evdealersales-presentation:dev"
+    ports: []
+    volumes:
+    - "D:\\FPT\\8_Semester\\PRN232\\asm\\EVDealerSales\\EVDealerSales.Presentation:/app:rw"
+    - "D:\\FPT\\8_Semester\\PRN232\\asm\\EVDealerSales:/src:rw"
+    - "C:\\Users\\trang\\.nuget\\packages:/home/app/.nuget/packages"
+    working_dir: "/app"

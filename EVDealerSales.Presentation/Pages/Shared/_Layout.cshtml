@@ -1,0 +1,1069 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EVDealerSales</title>
+
+    <!-- Lightning Icon Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%230070f3'><path d='M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8.5a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8.5a.5.5 0 0 1 .615-.09z'/></svg>">
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/EVDealerSales.styles.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    @RenderSection("Styles", required: false)
+    
+    <style>
+        /* Chat Widget Styles */
+        .chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .chat-toggle-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0070f3 0%, #0051cc 100%);
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 112, 243, 0.4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .chat-toggle-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 112, 243, 0.6);
+        }
+
+        .chat-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            border: 2px solid #0a0a0a;
+        }
+
+        .chat-window {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 380px;
+            height: 550px;
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            border-radius: 16px;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+        }
+
+        .chat-window.active {
+            display: flex;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #0070f3 0%, #0051cc 100%);
+            color: white;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chat-header h5 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            flex: 1 1 auto;
+        }
+
+        .chat-tabs {
+            display: flex;
+            gap: 8px;
+            margin-left: 8px;
+        }
+
+        .chat-tab-btn {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .chat-tab-btn.active {
+            background: rgba(255,255,255,0.18);
+            font-weight: 600;
+        }
+
+        .chat-close-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .chat-close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-users-list {
+            background: #000;
+            border-bottom: 1px solid #1a1a1a;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .chat-user-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.2s;
+        }
+
+        .chat-user-item:hover {
+            background: #0a0a0a;
+        }
+
+        .chat-user-item.active {
+            background: #0070f3;
+        }
+
+        .chat-user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .chat-user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chat-user-name {
+            color: #fff;
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .chat-user-role {
+            color: #888;
+            font-size: 12px;
+        }
+
+        .chat-user-badge {
+            background: #ef4444;
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            background: #000;
+        }
+
+        .chat-message {
+            margin-bottom: 12px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-message.sent {
+            flex-direction: row-reverse;
+        }
+
+        .chat-message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .chat-message-content {
+            max-width: 70%;
+        }
+
+        .chat-message-bubble {
+            background: #1a1a1a;
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 12px;
+            word-wrap: break-word;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .chat-message.sent .chat-message-bubble {
+            background: #0070f3;
+        }
+
+        .chat-message-time {
+            color: #666;
+            font-size: 11px;
+            margin-top: 4px;
+            padding: 0 4px;
+        }
+
+        .chat-typing-indicator {
+            color: #888;
+            font-size: 12px;
+            font-style: italic;
+            padding: 8px 16px;
+            display: none;
+        }
+
+        .chat-typing-indicator.active {
+            display: block;
+        }
+
+        .chat-input-area {
+            background: #0a0a0a;
+            padding: 12px 16px;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 20px;
+            padding: 10px 16px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .chat-input:focus {
+            border-color: #0070f3;
+        }
+
+        .chat-send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #0070f3;
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chat-send-btn:hover {
+            background: #0051cc;
+            transform: scale(1.05);
+        }
+
+        .chat-send-btn:disabled {
+            background: #2a2a2a;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        .chat-empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #666;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .chat-empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Online status indicator */
+        .user-online-indicator {
+            width: 10px;
+            height: 10px;
+            background: #22c55e;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            border: 2px solid #0a0a0a;
+        }
+
+        .chat-user-avatar {
+            position: relative;
+        }
+
+        /* Scrollbar styling */
+        .chat-messages::-webkit-scrollbar,
+        .chat-users-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track,
+        .chat-users-list::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb,
+        .chat-users-list::-webkit-scrollbar-thumb {
+            background: #2a2a2a;
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover,
+        .chat-users-list::-webkit-scrollbar-thumb:hover {
+            background: #3a3a3a;
+        }
+
+        @@media (max-width: 480px) {
+            .chat-window {
+                width: calc(100vw - 40px);
+                height: calc(100vh - 120px);
+                right: 20px;
+                bottom: 90px;
+            }
+        }
+    </style>
+</head>
+<body>
+    @{
+        // Accessing User.Identity.IsAuthenticated and claims remains the same in a Razor Pages Layout
+        var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+        var userName = User.Identity?.Name;
+        var userEmail = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Email)?.Value;
+        var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+
+        // Generate user initials for avatar
+        var userInitials = "";
+        if (!string.IsNullOrEmpty(userName))
+        {
+            var nameParts = userName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            userInitials = nameParts.Length >= 2
+            ? $"{nameParts[0][0]}{nameParts[1][0]}"
+            : nameParts[0].Length >= 2
+            ? $"{nameParts[0][0]}{nameParts[0][1]}"
+            : nameParts[0][0].ToString();
+            userInitials = userInitials.ToUpper();
+        }
+    }
+
+    <header class="modern-header">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <a class="navbar-brand fw-bold" asp-area="" asp-page="/Home/LandingPage">
+                    <i class="bi bi-lightning-charge-fill me-2"></i>
+                    EVDealerSales
+                </a>
+
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-page="/Vehicle/BrowseVehicles">Vehicles</a>
+                        </li>
+                        @if (isAuthenticated && userRole == "Customer")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/TestDrive/Register">
+                                    Test Drive
+                                </a>
+                            </li>
+                        }
+                    </ul>
+
+                    <div class="navbar-nav">
+                        @if (isAuthenticated)
+                        {
+                            <div class="dropdown user-dropdown">
+                                <a class="nav-link dropdown-toggle user-menu-trigger" href="#" id="userDropdown" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="user-avatar">
+                                        <span class="user-initials">@userInitials</span>
+                                    </div>
+                                    <div class="user-info d-none d-lg-block">
+                                        <div class="user-name">@userName</div>
+                                        <div class="user-role">@userRole</div>
+                                    </div>
+                                    <i class="bi bi-chevron-down ms-2"></i>
+                                </a>
+                                <ul class="dropdown-menu user-dropdown-menu" aria-labelledby="userDropdown">
+                                    <li class="dropdown-header">
+                                        <div class="user-details">
+                                            <div class="user-avatar-large">
+                                                <span class="user-initials">@userInitials</span>
+                                            </div>
+                                            <div class="user-meta">
+                                                <div class="user-name-large">@userName</div>
+                                                <div class="user-email">@userEmail</div>
+                                                <div class="user-role-badge">@userRole</div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item" asp-page="/Profile/Index">
+                                            <i class="bi bi-person me-2"></i>
+                                            Profile
+                                        </a>
+
+                                        @if (userRole == "DealerStaff")
+                                        {
+                                        <li>
+                                            <a class="dropdown-item" asp-page="/TestDrive/Index">
+                                                <i class="fa-regular fa-calendar-check"></i>
+                                                Test Drive Appointments
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-page="/Staff/ManageOrders">
+                                                <i class="bi bi-bag-check me-2"></i>
+                                                Customer Orders
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-page="/Staff/ManageDeliveries">
+                                                <i class="bi bi-bag-check me-2"></i>
+                                                Customer Deliveries
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-page="/Staff/Customers">
+                                                <i class="bi bi-people me-2"></i>
+                                                Manage Customer
+                                            </a>
+                                        </li>                                 
+                                    }
+                                    else if (userRole == "DealerManager")
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" asp-page="/Manager/ManageStaff">
+                                                <i class="bi bi-person-badge me-2"></i>
+                                                Staffs
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-page="/Vehicle/Index">
+                                                <i class="fa-solid fa-car me-2"></i>
+                                                Vehicles
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-page="/Manager/ManageFeedback">
+                                                <i class="fa-solid fa-car me-2"></i>
+                                                Feedbacks
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-page="/Manager/ManageReport">
+                                                <i class="bi bi-bar-chart-line me-2"></i>
+                                                Reports
+                                            </a>
+                                        </li>
+                                    }
+                                    else if (userRole == "Customer")
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" asp-page="/TestDrive/Register">
+                                                <i class="bi bi-calendar-plus me-2"></i>
+                                                Book Test Drive
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-page="/TestDrive/MyTestDrives">
+                                                <i class="bi bi-calendar-check me-2"></i>
+                                                My Test Drives
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-page="/Order/MyOrders">
+                                                <i class="bi bi-bag-check me-2"></i>
+                                                My Orders
+                                            </a>
+                                        </li>
+                                    }
+
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-page="/Auth/Login" asp-page-handler="Logout" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="bi bi-box-arrow-right me-2"></i>
+                                                Logout
+                                            </button>
+                                        </form>
+                                    </li>
+
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            <a class="nav-link me-2" asp-page="/Auth/Login">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>
+                                Login
+                            </a>
+                            <a class="nav-link btn btn-outline-primary px-3" asp-page="/Auth/Register">
+                                Register
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        @RenderBody()
+    </main>
+
+    <!-- Floating Chat Widget (Only for authenticated users) -->
+    @if (isAuthenticated)
+    {
+        <div class="chat-widget">
+            <!-- Chat Toggle Button -->
+            <button class="chat-toggle-btn" id="chatToggleBtn">
+                <i class="bi bi-chat-dots-fill"></i>
+                <span class="chat-badge" id="chatBadge" style="display: none;">0</span>
+            </button>
+
+            <!-- Chat Window -->
+            <div class="chat-window" id="chatWindow">
+                <!-- Chat Header -->
+                <div class="chat-header">
+                    <h5><i class="bi bi-chat-dots me-2"></i>Messages</h5>
+
+                    @* For staff show tabs *@
+                    @if (userRole == "DealerStaff")
+                    {
+                        <div class="chat-tabs" id="chatTabs">
+                            <button type="button" class="chat-tab-btn active" id="tabCustomers">Customers</button>
+                            <button type="button" class="chat-tab-btn" id="tabManagers">Managers</button>
+                        </div>
+                    }
+
+                    <button class="chat-close-btn" id="chatCloseBtn">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+
+                <!-- Users List -->
+                <div class="chat-users-list" id="chatUsersList">
+                    <div class="chat-empty-state">
+                        <div class="chat-empty-icon">
+                            <i class="bi bi-person-lines-fill"></i>
+                        </div>
+                        <p>Loading contacts...</p>
+                    </div>
+                </div>
+
+                <!-- Messages Area -->
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-empty-state">
+                        <div class="chat-empty-icon">
+                            <i class="bi bi-chat-left-text"></i>
+                        </div>
+                        <p>Select a conversation to start chatting</p>
+                    </div>
+                </div>
+
+                <!-- Typing Indicator -->
+                <div class="chat-typing-indicator" id="typingIndicator">
+                    <span id="typingUserName"></span> is typing...
+                </div>
+
+                <!-- Input Area -->
+                <div class="chat-input-area">
+                    <div class="chat-input-wrapper">
+                        <input type="text" class="chat-input" id="chatInput" placeholder="Type a message..." disabled>
+                        <button class="chat-send-btn" id="chatSendBtn" disabled>
+                            <i class="bi bi-send-fill"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <footer class="modern-footer">
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-md-6">
+                    <div class="footer-brand">
+                        <h5 class="fw-bold mb-3">
+                            <i class="bi bi-lightning-charge-fill me-2"></i>
+                            EVDealerSales
+                        </h5>
+                        <p class="text-muted mb-3">
+                            Leading the future of sustainable transportation with premium electric vehicles.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="fw-semibold mb-3">Contact</h6>
+                    <ul class="list-unstyled footer-contact">
+                        <li class="mb-2">
+                            <i class="bi bi-envelope me-2"></i>
+                            info@evdealersales.com
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-telephone me-2"></i>
+                            (123) 456-7890
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="text-center">
+                <p class="text-muted mb-0">
+                    &copy; 2025 EVDealerSales. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @if (isAuthenticated)
+    {
+        <!-- SignalR Client Library -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+        
+        <script>
+            (function() {
+                const chatToggleBtn = document.getElementById('chatToggleBtn');
+                const chatWindow = document.getElementById('chatWindow');
+                const chatCloseBtn = document.getElementById('chatCloseBtn');
+                const chatUsersList = document.getElementById('chatUsersList');
+                const chatMessages = document.getElementById('chatMessages');
+                const chatInput = document.getElementById('chatInput');
+                const chatSendBtn = document.getElementById('chatSendBtn');
+                const chatBadge = document.getElementById('chatBadge');
+                const typingIndicator = document.getElementById('typingIndicator');
+                const tabCustomers = document.getElementById('tabCustomers');
+                const tabManagers = document.getElementById('tabManagers');
+                const chatTabsContainer = document.getElementById('chatTabs');
+
+                // Role from server
+                const currentUserRole = '@userRole';
+
+                let connection;
+                let currentChatUserId = null;
+                let currentChatUserName = '';
+                let typingTimeout;
+                let availableUsers = [];
+                let currentTab = 'customers'; // for staff
+
+                // Get auth token from session
+                const authToken = '@Context.Session.GetString("AuthToken")';
+
+                // Initialize SignalR Connection
+                async function initializeChat() {
+                    try {
+                        connection = new signalR.HubConnectionBuilder()
+                            .withUrl('/chatHub', {
+                                accessTokenFactory: () => authToken
+                            })
+                            .withAutomaticReconnect()
+                            .configureLogging(signalR.LogLevel.Information)
+                            .build();
+
+                        // Setup event handlers
+                        setupSignalRHandlers();
+
+                        // Start connection
+                        await connection.start();
+                        console.log("SignalR Connected");
+
+                        // Ensure correct tab state applied on load
+                        if (currentUserRole === 'DealerStaff') switchTab(currentTab);
+
+                        // Load available users
+                        await connection.invoke("GetAvailableUsers");
+                    } catch (err) {
+                        console.error("SignalR Connection Error:", err);
+                        showError("Failed to connect to chat server");
+                    }
+                }
+
+                function switchTab(tab) {
+                    currentTab = tab;
+                    if (tabCustomers) tabCustomers.classList.toggle('active', tab === 'customers');
+                    if (tabManagers) tabManagers.classList.toggle('active', tab === 'managers');
+
+                    // Clear any active conversation when switching tabs
+                    currentChatUserId = null;
+                    currentChatUserName = '';
+                    chatInput.disabled = true;
+                    chatSendBtn.disabled = true;
+                    chatInput.value = '';
+                    chatInput.placeholder = 'Select a contact to start chatting';
+                    chatMessages.innerHTML = `
+                        <div class="chat-empty-state">
+                            <div class="chat-empty-icon"><i class="bi bi-chat-left-text"></i></div>
+                            <p>Select a conversation to start chatting</p>
+                        </div>`;
+
+                    renderUsersList(availableUsers);
+                }
+
+                // Event-delegation for tabs to ensure clicks are handled even if buttons are re-rendered
+                if (chatTabsContainer) {
+                    chatTabsContainer.addEventListener('click', function (e) {
+                        const btn = e.target.closest('.chat-tab-btn');
+                        if (!btn) return;
+                        if (btn.id === 'tabCustomers') switchTab('customers');
+                        if (btn.id === 'tabManagers') switchTab('managers');
+                    });
+                }
+
+                // Setup SignalR event handlers
+                function setupSignalRHandlers() {
+                    // Receive available users
+                    connection.on("ReceiveAvailableUsers", (users) => {
+                        availableUsers = users;
+                        renderUsersList(users);
+                    });
+
+                    // Receive chat history
+                    connection.on("ReceiveChatHistory", (messages) => {
+                        renderChatHistory(messages);
+                    });
+
+                    // Receive new message
+                    connection.on("ReceiveMessage", (message) => {
+                        if (message.senderId === currentChatUserId) {
+                            appendMessage(message, false);
+                            scrollToBottom();
+                            
+                            // Mark as read
+                            connection.invoke("MarkAsRead", message.senderId);
+                        } else {
+                            // Update badge
+                            updateUnreadBadge();
+                        }
+                    });
+
+                    // Message sent confirmation
+                    connection.on("MessageSent", (message) => {
+                        appendMessage(message, true);
+                        scrollToBottom();
+                    });
+
+                    // Update unread count
+                    connection.on("ReceiveUnreadCount", (count) => {
+                        updateBadge(count);
+                    });
+
+                    connection.on("UpdateUnreadCount", (senderId) => {
+                        updateUnreadBadge();
+                    });
+
+                    // Typing indicators
+                    connection.on("UserTyping", (userId) => {
+                        if (userId === currentChatUserId) {
+                            showTypingIndicator();
+                        }
+                    });
+
+                    connection.on("UserStoppedTyping", (userId) => {
+                        if (userId === currentChatUserId) {
+                            hideTypingIndicator();
+                        }
+                    });
+
+                    // Error handling
+                    connection.on("Error", (error) => {
+                        console.error("Chat Error:", error);
+                        showError(error);
+                    });
+                }
+
+                // Render users list
+                function renderUsersList(users) {
+                    // Filter users according to current user's role and selected tab
+                    let list = [];
+
+                    if (currentUserRole === 'Customer') {
+                        // customer should only see staff
+                        list = users.filter(u => u.userRole === 'DealerStaff');
+                    } else if (currentUserRole === 'DealerManager') {
+                        // manager sees staff
+                        list = users.filter(u => u.userRole === 'DealerStaff');
+                    } else if (currentUserRole === 'DealerStaff') {
+                        // staff sees customers or manager based on tab
+                        if (currentTab === 'customers') {
+                            list = users.filter(u => u.userRole === 'Customer');
+                        } else {
+                            list = users.filter(u => u.userRole === 'DealerManager');
+                        }
+                    } else {
+                        list = users; // fallback
+                    }
+
+                    if (!list || list.length === 0) {
+                        chatUsersList.innerHTML = `
+                            <div class="chat-empty-state">
+                                <div class="chat-empty-icon"><i class="bi bi-person-x"></i></div>
+                                <p>No contacts available</p>
+                            </div>`;
+                        return;
+                    }
+
+                    chatUsersList.innerHTML = list.map(user => `
+                        <div class="chat-user-item" data-user-id="${user.userId}" data-user-name="${user.userName}">
+                            <div class="chat-user-avatar">${getInitials(user.userName)}</div>
+                            <div class="chat-user-info">
+                                <div class="chat-user-name">${user.userName}</div>
+                                <div class="chat-user-role">${user.userRole}</div>
+                            </div>
+                            ${user.unreadCount > 0 ? `<span class="chat-user-badge">${user.unreadCount}</span>` : ''}
+                        </div>
+                    `).join('');
+
+                    // Add click handlers
+                    document.querySelectorAll('.chat-user-item').forEach(item => {
+                        item.addEventListener('click', function() {
+                            const userId = this.dataset.userId;
+                            const userName = this.dataset.userName;
+                            selectUser(userId, userName);
+                        });
+                    });
+                }
+
+                // Select user to chat with
+                async function selectUser(userId, userName) {
+                    currentChatUserId = userId;
+                    currentChatUserName = userName;
+
+                    // Update active state
+                    document.querySelectorAll('.chat-user-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    document.querySelector(`[data-user-id="${userId}"]`)?.classList.add('active');
+
+                    // Enable input
+                    chatInput.disabled = false;
+                    chatSendBtn.disabled = false;
+                    chatInput.placeholder = `Message ${userName}...`;
+
+                    // Clear messages
+                    chatMessages.innerHTML = '';
+
+                    // Load chat history
+                    await connection.invoke("GetChatHistory", userId);
+
+                    // Mark as read
+                    await connection.invoke("MarkAsRead", userId);
+
+                    // Update badge
+                    updateUnreadBadge();
+                }
+
+                // Render chat history
+                function renderChatHistory(messages) {
+                    if (!messages || messages.length === 0) {
+                        chatMessages.innerHTML = `
+                            <div class="chat-empty-state">
+                                <div class="chat-empty-icon">
+                                    <i class="bi bi-chat-left-text"></i>
+                                </div>
+                                <p>No messages yet. Start the conversation!</p>
+                            </div>`;
+                        return;
+                    }
+                    chatMessages.innerHTML = '';
+                    messages.forEach(msg => appendMessage(msg, msg.senderId !== currentChatUserId));
+                    scrollToBottom();
+                }
+
+                // Append message to chat
+                function appendMessage(message, isSent) {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `chat-message ${isSent ? 'sent' : 'received'}`;
+                    const initials = getInitials(isSent ? '@userName' : currentChatUserName);
+                    const time = new Date(message.sentAt).toLocaleTimeString();
+                    messageDiv.innerHTML = `
+                        <div class="chat-message-avatar">${initials}</div>
+                        <div class="chat-message-content">
+                            <div class="chat-message-bubble">${escapeHtml(message.message)}</div>
+                            <div class="chat-message-time">${time}</div>
+                        </div>`;
+                    chatMessages.appendChild(messageDiv);
+                }
+
+                // Send message
+                async function sendMessage() {
+                    const message = chatInput.value.trim();
+                    if (!message || !currentChatUserId) return;
+                    try {
+                        await connection.invoke("SendMessage", { receiverId: currentChatUserId, message });
+                        chatInput.value = '';
+                        if (currentChatUserId) await connection.invoke("StopTyping", currentChatUserId);
+                    } catch (err) { console.error("Error sending message:", err); }
+                }
+
+                // Handle typing
+                chatInput.addEventListener('input', async function() {
+                    if (!currentChatUserId) return;
+                    // Notify typing
+                    await connection.invoke("NotifyTyping", currentChatUserId);
+
+                    // Clear previous timeout
+                    clearTimeout(typingTimeout);
+
+                    // Stop typing after 2 seconds of inactivity
+                    typingTimeout = setTimeout(async () => {
+                        await connection.invoke("StopTyping", currentChatUserId);
+                    }, 2000);
+                });
+
+                // Show/hide typing indicator
+                function showTypingIndicator() {
+                    document.getElementById('typingUserName').textContent = currentChatUserName;
+                    typingIndicator.classList.add('active');
+                }
+
+                function hideTypingIndicator() {
+                    typingIndicator.classList.remove('active');
+                }
+
+                // Update badge
+                function updateBadge(count) {
+                    if (count > 0) {
+                        chatBadge.textContent = count > 99 ? '99+' : count;
+                        chatBadge.style.display = 'flex';
+                    } else {
+                        chatBadge.style.display = 'none';
+                    }
+                }
+
+                async function updateUnreadBadge() {
+                    await connection.invoke("GetAvailableUsers");
+                }
+
+                // Utility functions
+                function getInitials(name) {
+                    const parts = name.trim().split(' ');
+                    if (parts.length >= 2) {
+                        return (parts[0][0] + parts[1][0]).toUpperCase();
+                    }
+                    return name.substring(0, 2).toUpperCase();
+                }
+
+                function escapeHtml(text) {
+                    const div = document.createElement('div');
+                    div.textContent = text;
+                    return div.innerHTML;
+                }
+
+                function scrollToBottom() {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+
+                function showError(message) {
+                    console.error(message);
+                }
+
+                // Event listeners
+                chatToggleBtn.addEventListener('click', () => {
+                    chatWindow.classList.add('active');
+                });
+
+                chatCloseBtn.addEventListener('click', () => {
+                    chatWindow.classList.remove('active');
+                });
+
+                chatSendBtn.addEventListener('click', sendMessage);
+
+                chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        sendMessage();
+                    }
+                });
+
+                // Initialize on page load
+                initializeChat();
+            })();
+        </script>
+    }
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
