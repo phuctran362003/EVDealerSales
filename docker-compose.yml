@@ -13,6 +13,8 @@ services:
       - "JWT__Issuer=EVDealerSales_Issuer"
       - "JWT__Audience=EVDealerSales_Audience"
       - GEMINI_API_KEY=AIzaSyDvLWsOUM4Vb-TyH2FaS8kEFGWc53guJpc
+      - Stripe__SecretKey=sk_test_51SFr8fERI6stQTTOPc38vP67e0LQO1wgZ2PK7LkqamHOCkrvgVk4LmwSLZw9jpVHrpyXKjdZtlfPxcACnfNf6php00WK8h9008
+      - Stripe__PublishableKey=pk_test_51SFr8fERI6stQTTOeBfsdqNvFIeB6ZKCjTxWHcBsW9OZ1qEvVS1axy7miMKdbXBwee17gjQQxnfpbtmZda4MBNHm00dYqaSEO4
       - AppSettings__BaseUrl=http://localhost:5000
     ports:
       - "5000:5000"
